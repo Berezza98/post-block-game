@@ -1,4 +1,4 @@
-import { AmbientLight, DirectionalLight, PerspectiveCamera, Scene, WebGLRenderer } from 'three';
+import { AmbientLight, CameraHelper, DirectionalLight, PerspectiveCamera, Scene, WebGLRenderer } from 'three';
 import { GUI } from 'dat.gui';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import GameElement from './types/GameElement.inteface';
@@ -37,6 +37,8 @@ export default class Game {
 	}
 
 	setRenderer() {
+		this.renderer.shadowMap.enabled = true;
+
 		this.renderer.setSize(window.innerWidth, window.innerHeight);
 		document.body.appendChild(this.renderer.domElement);
 	}
@@ -57,7 +59,8 @@ export default class Game {
 	setLight() {
 		this.light = new DirectionalLight(0xffffff, 1);
 		this.light.position.y = 3;
-		this.light.position.z = 1;
+		this.light.position.x = 1;
+		this.light.position.z = 2;
 		this.light.castShadow = true;
 
 		this.scene.add(this.light);

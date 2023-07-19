@@ -19,7 +19,7 @@ export default class Ground implements GameElement {
 	object = new Mesh(this.geometry, this.material);
 
 	constructor() {
-
+		this.object.receiveShadow = true;
 	}
 
 	get rotation() {

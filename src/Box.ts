@@ -30,6 +30,9 @@ export default class Box implements GameElement, ControllableElement {
 		this.vel = new Vector3(0, 0, 0);
 		this.dir = new Vector3(0, 0, 0.01);
 		this.object.position.set(0, 0, 0);
+
+		this.object.receiveShadow = true;
+		this.object.castShadow = true;
 	}
 
 	checkGroundCollision() {
