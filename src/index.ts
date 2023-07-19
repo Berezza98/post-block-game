@@ -1,5 +1,8 @@
 import Game from './Game';
 
-const game = new Game({ gui: true });
+const game = new Game({
+	gui: true,
+	controls: true,
+});
 
 game.render();

@@ -7,7 +7,7 @@ import {
 import GameElement from './types/GameElement.inteface';
 
 export default class Ground implements GameElement {
-	geometry = new PlaneGeometry(4, 5);
+	geometry = new PlaneGeometry(4, 8);
 
 	name = 'ground';
 	

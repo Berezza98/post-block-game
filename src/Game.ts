@@ -1,11 +1,13 @@
 import { AmbientLight, DirectionalLight, PerspectiveCamera, Scene, WebGLRenderer } from 'three';
 import { GUI } from 'dat.gui';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import GameElement from './types/GameElement.inteface';
 import Ground from './Ground';
 import Box from './Box';
 
 interface GameOptions {
 	gui?: boolean;
+	controls?: boolean;
 }
 
 export default class Game {
@@ -13,7 +15,9 @@ export default class Game {
 
 	renderer = new WebGLRenderer();
 
-	gui? = false;
+	options: GameOptions;
+
+	controls?: OrbitControls;
 
 	camera = new PerspectiveCamera(
 		75,
@@ -26,8 +30,8 @@ export default class Game {
 
 	gameElements: GameElement[] = [];
 
-	constructor({ gui }: GameOptions) {
-		this.gui = gui;
+	constructor(options: GameOptions) {
+		this.options = options;
 
 		this.init();
 	}
@@ -46,7 +50,7 @@ export default class Game {
 	}
 
 	setCameraPosition() {
-		this.camera.position.set(0, -3.3, 1.1);
+		this.camera.position.set(0, -4.8, 1.1);
 		this.camera.rotation.set(1.3, 0, 0);
 	}
 
@@ -61,7 +65,7 @@ export default class Game {
 	}
 
 	setGui() {
-		if (!this.gui) return;
+		if (!this.options.gui) return;
 
 		const gui = new GUI();
 
@@ -78,6 +82,12 @@ export default class Game {
 		});
 	}
 
+	setControls() {
+		if (!this.options.controls) return;
+
+		this.controls = new OrbitControls(this.camera, this.renderer.domElement);
+	}
+
 	init() {
 		this.setRenderer();
 
@@ -87,6 +97,8 @@ export default class Game {
 		this.addGameElements();
 
 		this.setGui();
+
+		this.setControls();
 
 		this.gameElements.forEach((element: GameElement) => {
 			this.scene.add(element.object);
@@ -100,6 +112,8 @@ export default class Game {
 	}
 
 	render() {
+		if (this.controls) this.controls.update(); 
+
 		this.update();
 
 		this.renderer.render(this.scene, this.camera);
