@@ -1,15 +1,26 @@
+import { Object3D, Event, Scene } from 'three';
 import Enemy, { ENEMY_EVENTS } from './Enemy';
 import Ground from './Ground';
+import GameElement from './types/GameElement.inteface';
 import IUpdatable from './types/Updatable.interface';
 import { randomRange } from './utils/randomRange';
 
-export default class EnemyPool implements IUpdatable {
-	size = 1;
+export default class EnemyPool implements GameElement {
+	name = 'enemy-pool';
+
+	size = 4;
 
 	collection: Enemy[] = [];
 
-	constructor(private ground: Ground) {
+	constructor(
+		private ground: Ground,
+		private scene: Scene,
+	) {
 		this.fill();
+	}
+
+	get object() {
+		return this.collection.map((enemy) => enemy.object);
 	}
 
 	fill() {
@@ -22,16 +33,18 @@ export default class EnemyPool implements IUpdatable {
 		console.log('add');
 		const halfOfGroundWidth = this.ground.geometry.parameters.width / 2;
 		const enemy = new Enemy(this.ground);
-		enemy.once(ENEMY_EVENTS.DIE, this.enemyDieHandler.bind(this));
+		enemy.once(ENEMY_EVENTS.DIE, this.enemyDieHandler.bind(this, enemy));
 
 		enemy.pos.set(randomRange(-halfOfGroundWidth, halfOfGroundWidth), 2, 3);
 
 		this.collection.push(enemy);
+		this.scene.add(enemy.object);
 	}
 
 	remove(enemy: Enemy) {
 		this.collection = this.collection.filter((el) => el !== enemy);
-		console.log(enemy === this.collection[0]);
+		enemy.dispose();
+		this.scene.remove(enemy.object);
 	}
 
 	enemyDieHandler(enemy: Enemy) {
@@ -40,5 +53,9 @@ export default class EnemyPool implements IUpdatable {
 		this.add();
 	}
 
-	update() {}
+	update() {
+		for (const element of this.collection) {
+			element.update();
+		}
+	}
 }

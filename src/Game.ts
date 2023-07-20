@@ -49,14 +49,14 @@ export default class Game {
 
 	addGameElements() {
 		const ground = new Ground();
-		const enemyPool = new EnemyPool(ground);
-		const box = new Player(ground, enemyPool.collection);
+		const enemyPool = new EnemyPool(ground, this.scene);
+		const box = new Player(ground, enemyPool);
 
-		this.gameElements.push(...[ground, ...enemyPool.collection, box]);
+		this.gameElements.push(...[ground, enemyPool, box]);
 	}
 
 	setCameraPosition() {
-		this.camera.position.set(0, -5.8, 1.1);
+		this.camera.position.set(0, -4.8, 1.1);
 		this.camera.rotation.set(1.3, 0, 0);
 	}
 
@@ -76,17 +76,17 @@ export default class Game {
 
 		const gui = new GUI();
 
-		this.gameElements.forEach((element) => {
-			const folder = gui.addFolder(element.name);
+		// this.gameElements.forEach((element) => {
+		// 	const folder = gui.addFolder(element.name);
 
-			folder.add(element.object.rotation, 'x', -Math.PI * 2, Math.PI * 2, 0.1).name('Rotation X');
-			folder.add(element.object.rotation, 'y', -Math.PI * 2, Math.PI * 2, 0.1).name('Rotation Y');
-			folder.add(element.object.rotation, 'z', -Math.PI * 2, Math.PI * 2, 0.1).name('Rotation Z');
+		// 	folder.add(element.object.rotation, 'x', -Math.PI * 2, Math.PI * 2, 0.1).name('Rotation X');
+		// 	folder.add(element.object.rotation, 'y', -Math.PI * 2, Math.PI * 2, 0.1).name('Rotation Y');
+		// 	folder.add(element.object.rotation, 'z', -Math.PI * 2, Math.PI * 2, 0.1).name('Rotation Z');
 
-			folder.add(element.object.position, 'x', -10, 10, 0.1).name('Position X');
-			folder.add(element.object.position, 'y', -10, 10, 0.1).name('Position Y');
-			folder.add(element.object.position, 'z', -10, 10, 0.1).name('Position Z');
-		});
+		// 	folder.add(element.object.position, 'x', -10, 10, 0.1).name('Position X');
+		// 	folder.add(element.object.position, 'y', -10, 10, 0.1).name('Position Y');
+		// 	folder.add(element.object.position, 'z', -10, 10, 0.1).name('Position Z');
+		// });
 	}
 
 	setControls() {
@@ -108,6 +108,14 @@ export default class Game {
 		this.setControls();
 
 		this.gameElements.forEach((element: GameElement) => {
+			if (Array.isArray(element.object)) {
+				for (const el of element.object) {
+					this.scene.add(el);
+				}
+
+				return;
+			}
+
 			this.scene.add(element.object);
 		});
 	}

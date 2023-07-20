@@ -5,6 +5,7 @@ import controller, { KEYS } from './Controller';
 import Ground from './Ground';
 import DynamicObject from './DynamicObject';
 import Enemy from './Enemy';
+import EnemyPool from './EnemyPool';
 
 export default class Player extends DynamicObject<BoxGeometry> implements ControllableElement {
 	controller = controller;
@@ -23,7 +24,7 @@ export default class Player extends DynamicObject<BoxGeometry> implements Contro
 
 	constructor(
 		ground: Ground,
-		private enemies: Enemy[],
+		private enemyPool: EnemyPool,
 	) {
 		super(ground);
 
@@ -42,7 +43,7 @@ export default class Player extends DynamicObject<BoxGeometry> implements Contro
 	checkEnemiesIntersection() {
 		let playerBox = new Box3().setFromObject(this.object);
 
-		this.enemies.forEach((enemy) => {
+		this.enemyPool.collection.forEach((enemy) => {
 			let enemyBox = new Box3().setFromObject(enemy.object);
 
 			const intersection = playerBox.intersectsBox(enemyBox);
