@@ -10,8 +10,9 @@ import { GUI } from 'dat.gui';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import GameElement from './types/GameElement.inteface';
 import Ground from './Ground';
-import Box from './Box';
+import Player from './Player';
 import Enemy from './Enemy';
+import EnemyPool from './EnemyPool';
 
 interface GameOptions {
 	gui?: boolean;
@@ -48,10 +49,10 @@ export default class Game {
 
 	addGameElements() {
 		const ground = new Ground();
-		const box = new Box(ground);
-		const enemy = new Enemy();
+		const enemyPool = new EnemyPool(ground);
+		const box = new Player(ground, enemyPool.collection);
 
-		this.gameElements.push(...[ground, box, enemy]);
+		this.gameElements.push(...[ground, ...enemyPool.collection, box]);
 	}
 
 	setCameraPosition() {

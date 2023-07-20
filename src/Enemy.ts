@@ -1,13 +1,8 @@
 import { BoxGeometry, Mesh, MeshStandardMaterial, Vector3 } from 'three';
-import GameElement from './types/GameElement.inteface';
+import DynamicObject from './DynamicObject';
+import Ground from './Ground';
 
-export default class Enemy implements GameElement {
-	pos = new Vector3();
-
-	vel = new Vector3();
-
-	acc = new Vector3();
-
+export default class Enemy extends DynamicObject<BoxGeometry> {
 	name = 'enemy';
 
 	size = 0.4;
@@ -20,7 +15,23 @@ export default class Enemy implements GameElement {
 
 	object = new Mesh(this.geometry, this.material);
 
-	constructor() {}
+	constructor(ground: Ground) {
+		super(ground);
+	}
 
-	update() {}
+	appendWalkForce() {
+		if (!this.onGround) return;
+
+		this.acc.add(new Vector3(0, -0.01, 0));
+	}
+
+	beforeSetNewPosition(): void {
+		this.appendWalkForce();
+	}
+
+	beforeUpdate(): void {}
+
+	afterUpdate(): void {
+		console.log();
+	}
 }

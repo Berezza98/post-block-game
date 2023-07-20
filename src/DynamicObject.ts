@@ -1,39 +1,73 @@
 import { BufferGeometry, Material, Object3D, Vector3 } from 'three';
 import GameElement from './types/GameElement.inteface';
+import Ground from './Ground';
 
-export default abstract class DynamicObject implements GameElement {
+export default abstract class DynamicObject<T> implements GameElement {
 	pos = new Vector3();
 
 	vel = new Vector3();
 
 	acc = new Vector3();
 
-	geometry: BufferGeometry;
+	abstract geometry: BufferGeometry & T;
 
-	material: Material;
+	abstract material: Material;
 
-	object: Object3D;
+	abstract object: Object3D;
 
-	name: string;
+	abstract name: string;
 
-	constructor(
-		geometry: BufferGeometry,
-		material: Material,
-		objectClass: new (...args: any[]) => Object3D,
-		name: string = 'dynamicObject',
-	) {
-		this.geometry = geometry;
-		this.material = material;
-		this.object = new objectClass(this.geometry, this.material);
-		this.name = name;
+	size: number;
+
+	abstract beforeUpdate?(): void;
+
+	abstract beforeSetNewPosition?(): void;
+
+	abstract afterUpdate?(): void;
+
+	constructor(protected ground: Ground) {}
+
+	get onGround() {
+		return this.pos.z - this.size / 2 <= this.ground.object.position.z;
+	}
+
+	addGravity() {
+		const gravity = new Vector3(0, 0, -0.01);
+
+		this.acc = this.acc.add(gravity);
+	}
+
+	addFriction() {
+		const coef = this.onGround ? 0.8 : 0.7;
+
+		this.vel = this.vel.multiply(new Vector3(coef, coef, 1));
+	}
+
+	checkGroundCollision() {
+		if (this.onGround) {
+			this.pos.z = this.ground.object.position.z + this.size / 2;
+			this.vel.multiply(new Vector3(1, 1, -0.6));
+			return;
+		}
 	}
 
 	update() {
+		this.addGravity();
+		this.addFriction();
+
+		this.beforeUpdate?.();
+
 		this.vel = this.vel.add(this.acc);
 		this.pos = this.pos.add(this.vel);
 
 		this.acc.set(0, 0, 0);
 
+		this.checkGroundCollision();
+
+		this.beforeSetNewPosition?.();
+
 		this.object.position.copy(this.pos);
+
+		this.afterUpdate?.();
 	}
 }
