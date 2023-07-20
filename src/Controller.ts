@@ -16,7 +16,7 @@ export class Controller {
 	constructor() {
 		this.addListeners();
 	}
-	
+
 	addListeners() {
 		window.addEventListener('mousedown', this.mousedown.bind(this));
 		window.addEventListener('mouseup', this.mouseup.bind(this));

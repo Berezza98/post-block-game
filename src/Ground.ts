@@ -1,21 +1,16 @@
-import {
-	Mesh,
-	PlaneGeometry,
-	DoubleSide,
-	MeshStandardMaterial,
-} from 'three';
+import { Mesh, PlaneGeometry, DoubleSide, MeshStandardMaterial } from 'three';
 import GameElement from './types/GameElement.inteface';
 
 export default class Ground implements GameElement {
 	geometry = new PlaneGeometry(4, 8);
 
 	name = 'ground';
-	
+
 	material = new MeshStandardMaterial({
 		color: 0x0000ff,
-		side: DoubleSide
+		side: DoubleSide,
 	});
-	
+
 	object = new Mesh(this.geometry, this.material);
 
 	constructor() {
@@ -26,6 +21,5 @@ export default class Ground implements GameElement {
 		return this.object.rotation;
 	}
 
-	update() {
-	}
+	update() {}
 }

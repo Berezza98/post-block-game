@@ -1,9 +1,17 @@
-import { AmbientLight, CameraHelper, DirectionalLight, PerspectiveCamera, Scene, WebGLRenderer } from 'three';
+import {
+	AmbientLight,
+	CameraHelper,
+	DirectionalLight,
+	PerspectiveCamera,
+	Scene,
+	WebGLRenderer,
+} from 'three';
 import { GUI } from 'dat.gui';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import GameElement from './types/GameElement.inteface';
 import Ground from './Ground';
 import Box from './Box';
+import Enemy from './Enemy';
 
 interface GameOptions {
 	gui?: boolean;
@@ -19,12 +27,7 @@ export default class Game {
 
 	controls?: OrbitControls;
 
-	camera = new PerspectiveCamera(
-		75,
-		window.innerWidth / window.innerHeight,
-		0.1,
-		1000
-	);
+	camera = new PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 
 	light: DirectionalLight;
 
@@ -46,9 +49,9 @@ export default class Game {
 	addGameElements() {
 		const ground = new Ground();
 		const box = new Box(ground);
+		const enemy = new Enemy();
 
-		this.gameElements.push(ground);
-		this.gameElements.push(box);
+		this.gameElements.push(...[ground, box, enemy]);
 	}
 
 	setCameraPosition() {
@@ -115,7 +118,7 @@ export default class Game {
 	}
 
 	render() {
-		if (this.controls) this.controls.update(); 
+		if (this.controls) this.controls.update();
 
 		this.update();
 

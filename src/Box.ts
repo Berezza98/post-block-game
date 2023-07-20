@@ -23,7 +23,7 @@ export default class Box implements GameElement, ControllableElement {
 	vel: Vector3;
 
 	material = new MeshStandardMaterial({
-		color: 0x00ff00
+		color: 0x00ff00,
 	});
 
 	object = new Mesh(this.geometry, this.material);
@@ -66,12 +66,12 @@ export default class Box implements GameElement, ControllableElement {
 		const groundBorder = this.ground.geometry.parameters.width / 2;
 		const boxSize = this.geometry.parameters.width;
 
-		if (this.pos.x + (boxSize / 2) > groundBorder) {
-			this.pos.x = groundBorder - (boxSize / 2);
+		if (this.pos.x + boxSize / 2 > groundBorder) {
+			this.pos.x = groundBorder - boxSize / 2;
 		}
 
-		if (this.pos.x - (boxSize / 2) < -groundBorder) {
-			this.pos.x = -groundBorder + (boxSize / 2);
+		if (this.pos.x - boxSize / 2 < -groundBorder) {
+			this.pos.x = -groundBorder + boxSize / 2;
 		}
 	}
 
@@ -84,24 +84,24 @@ export default class Box implements GameElement, ControllableElement {
 
 		if (this.controller.keysDown[KEYS.RIGHT]) {
 			this.acc.add(new Vector3(forceValue, 0, 0));
-		};
+		}
 	}
 
 	handleJump() {
 		if (!this.controller.keysDown[KEYS.SPACE] || this.object.position.z > SIZE / 2) return;
 		this.acc = this.acc.add(new Vector3(0, 0, 0.2));
 	}
-	
+
 	controlsHandlers() {
 		this.handleJump();
 		this.handlePositionChange();
 	}
-	
+
 	update() {
 		this.addGravity();
 		this.addFriction();
 		this.controlsHandlers();
-		
+
 		this.vel = this.vel.add(this.acc);
 		// console.log(this.vel, this.acc);
 		this.pos = this.pos.add(this.vel);
