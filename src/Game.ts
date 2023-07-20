@@ -45,7 +45,7 @@ export default class Game {
 
 	addGameElements() {
 		const ground = new Ground();
-		const box = new Box();
+		const box = new Box(ground);
 
 		this.gameElements.push(ground);
 		this.gameElements.push(box);

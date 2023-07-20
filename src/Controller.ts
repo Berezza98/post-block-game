@@ -1,5 +1,7 @@
 export const KEYS = {
 	SPACE: ' ',
+	LEFT: 'ArrowLeft',
+	RIGHT: 'ArrowRight',
 } as const;
 
 export class Controller {
@@ -7,6 +9,8 @@ export class Controller {
 
 	keysDown = {
 		[KEYS.SPACE]: false,
+		[KEYS.LEFT]: false,
+		[KEYS.RIGHT]: false,
 	};
 
 	constructor() {
