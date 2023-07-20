@@ -56,7 +56,7 @@ export default class Game {
 	}
 
 	setCameraPosition() {
-		this.camera.position.set(0, -4.8, 1.1);
+		this.camera.position.set(0, -5.8, 1.1);
 		this.camera.rotation.set(1.3, 0, 0);
 	}
 

@@ -2,6 +2,10 @@ import { BoxGeometry, Mesh, MeshStandardMaterial, Vector3 } from 'three';
 import DynamicObject from './DynamicObject';
 import Ground from './Ground';
 
+export const ENEMY_EVENTS = {
+	DIE: 'ENEMY_DIE',
+};
+
 export default class Enemy extends DynamicObject<BoxGeometry> {
 	name = 'enemy';
 
@@ -19,6 +23,17 @@ export default class Enemy extends DynamicObject<BoxGeometry> {
 		super(ground);
 	}
 
+	checkOutOfGround() {
+		this.ground.object.geometry.computeBoundingBox();
+		const box = this.ground.object.geometry.boundingBox;
+
+		if (!box) return;
+
+		if (this.pos.y + this.size / 2 < box.min.y) {
+			this.emit(ENEMY_EVENTS.DIE);
+		}
+	}
+
 	appendWalkForce() {
 		if (!this.onGround) return;
 
@@ -32,6 +47,6 @@ export default class Enemy extends DynamicObject<BoxGeometry> {
 	beforeUpdate(): void {}
 
 	afterUpdate(): void {
-		console.log();
+		this.checkOutOfGround();
 	}
 }

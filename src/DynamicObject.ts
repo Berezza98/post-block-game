@@ -1,8 +1,9 @@
 import { BufferGeometry, Material, Object3D, Vector3 } from 'three';
 import GameElement from './types/GameElement.inteface';
 import Ground from './Ground';
+import { EventEmitter } from './EventEmitter';
 
-export default abstract class DynamicObject<T> implements GameElement {
+export default abstract class DynamicObject<T> extends EventEmitter implements GameElement {
 	pos = new Vector3();
 
 	vel = new Vector3();
@@ -25,7 +26,9 @@ export default abstract class DynamicObject<T> implements GameElement {
 
 	abstract afterUpdate?(): void;
 
-	constructor(protected ground: Ground) {}
+	constructor(protected ground: Ground) {
+		super();
+	}
 
 	get onGround() {
 		return this.pos.z - this.size / 2 <= this.ground.object.position.z;
