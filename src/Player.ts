@@ -1,6 +1,5 @@
 import { BoxGeometry, MeshStandardMaterial, Mesh, Vector3, Box3 } from 'three';
 import ControllableElement from './types/ControllableElement.interface';
-import { randomRange } from './utils/randomRange';
 import controller, { KEYS } from './Controller';
 import Ground from './Ground';
 import DynamicObject from './DynamicObject';
@@ -11,7 +10,7 @@ export const PLAYER_EVENTS = {
 	POSITION_CHANGED: 'POSITION_CHANGED',
 };
 
-export default class Player extends DynamicObject<BoxGeometry> implements ControllableElement {
+export default class Player extends DynamicObject implements ControllableElement {
 	controller = controller;
 
 	size = 0.4;
@@ -32,9 +31,8 @@ export default class Player extends DynamicObject<BoxGeometry> implements Contro
 	) {
 		super(ground);
 
-		this.pos = new Vector3(0, -2, randomRange(1, 2));
+		this.pos = new Vector3(0, -this.ground.height / 2 + 1, 2);
 		this.vel = new Vector3(0, 0, 0);
-		this.object.position.set(0, 0, 0);
 
 		this.object.receiveShadow = true;
 		this.object.castShadow = true;
@@ -45,13 +43,13 @@ export default class Player extends DynamicObject<BoxGeometry> implements Contro
 	}
 
 	get minX() {
-		const groundBorder = this.ground.geometry.parameters.width / 2;
+		const groundBorder = this.ground.width / 2;
 
 		return -groundBorder + this.size / 2;
 	}
 
 	get maxX() {
-		const groundBorder = this.ground.geometry.parameters.width / 2;
+		const groundBorder = this.ground.width / 2;
 
 		return groundBorder - this.size / 2;
 	}
@@ -69,8 +67,6 @@ export default class Player extends DynamicObject<BoxGeometry> implements Contro
 	}
 
 	checkBorders() {
-		const boxSize = this.geometry.parameters.width;
-
 		if (this.pos.x > this.maxX) {
 			this.pos.x = this.maxX;
 		}
@@ -95,7 +91,7 @@ export default class Player extends DynamicObject<BoxGeometry> implements Contro
 	}
 
 	handleJump() {
-		if ((this.controller.keysDown[KEYS.SPACE] || this.controller.clicked) && !this.isFlying) {
+		if (this.controller.keysDown[KEYS.SPACE] && !this.isFlying) {
 			this.acc = this.acc.add(new Vector3(0, 0, 0.17));
 
 			return;

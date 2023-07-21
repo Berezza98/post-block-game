@@ -3,14 +3,14 @@ import GameElement from './types/GameElement.inteface';
 import Ground from './Ground';
 import { EventEmitter } from './EventEmitter';
 
-export default abstract class DynamicObject<T> extends EventEmitter implements GameElement {
+export default abstract class DynamicObject extends EventEmitter implements GameElement {
 	pos = new Vector3();
 
 	vel = new Vector3();
 
 	acc = new Vector3();
 
-	abstract geometry: BufferGeometry & T;
+	abstract geometry: BufferGeometry;
 
 	abstract material: Material;
 

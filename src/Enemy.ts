@@ -1,14 +1,13 @@
 import { BoxGeometry, Mesh, MeshStandardMaterial, Vector3 } from 'three';
 import DynamicObject from './DynamicObject';
 import Ground from './Ground';
-import { randomRange } from './utils/randomRange';
 import { randFloat } from 'three/src/math/MathUtils';
 
 export const ENEMY_EVENTS = {
 	DIE: 'ENEMY_DIE',
 };
 
-export default class Enemy extends DynamicObject<BoxGeometry> {
+export default class Enemy extends DynamicObject {
 	name = 'enemy';
 
 	size = 0.4;
@@ -21,23 +20,15 @@ export default class Enemy extends DynamicObject<BoxGeometry> {
 
 	object = new Mesh(this.geometry, this.material);
 
-	constructor(ground: Ground, position: Vector3) {
+	constructor(ground: Ground) {
 		super(ground);
-
-		this.object.position.copy(position);
-		this.pos = position;
 
 		this.object.receiveShadow = true;
 		this.object.castShadow = true;
 	}
 
 	checkOutOfGround() {
-		this.ground.object.geometry.computeBoundingBox();
-		const box = this.ground.object.geometry.boundingBox;
-
-		if (!box) return;
-
-		if (this.pos.y + this.size / 2 < box.min.y) {
+		if (this.pos.y + this.size / 2 < -this.ground.height / 2) {
 			this.emit(ENEMY_EVENTS.DIE);
 		}
 	}

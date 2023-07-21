@@ -2,7 +2,7 @@ import Game from './Game';
 
 const game = new Game({
 	// gui: true,
-	// controls: true,
+	controls: true,
 });
 
 game.render();

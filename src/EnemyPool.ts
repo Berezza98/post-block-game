@@ -38,10 +38,10 @@ export default class EnemyPool implements GameElement {
 				(timeouId) => timeouId !== creationTimeout,
 			);
 
-			const halfOfGroundWidth = this.ground.geometry.parameters.width / 2;
+			const enemy = new Enemy(this.ground);
 
-			const position = new Vector3(randFloat(-halfOfGroundWidth, halfOfGroundWidth), 2, 3);
-			const enemy = new Enemy(this.ground, position);
+			const maxXPosition = this.ground.width / 2 - enemy.size / 2;
+			enemy.pos = new Vector3(randFloat(-maxXPosition, maxXPosition), 2, 3);
 			enemy.once(ENEMY_EVENTS.DIE, this.enemyDieHandler.bind(this, enemy));
 
 			this.collection.push(enemy);
