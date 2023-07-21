@@ -7,11 +7,7 @@ export const KEYS = {
 export class Controller {
 	clicked = false;
 
-	keysDown = {
-		[KEYS.SPACE]: false,
-		[KEYS.LEFT]: false,
-		[KEYS.RIGHT]: false,
-	};
+	keysDown: Record<string, boolean> = {};
 
 	constructor() {
 		this.addListeners();
@@ -33,15 +29,11 @@ export class Controller {
 	}
 
 	keydown(e: KeyboardEvent) {
-		if (this.keysDown.hasOwnProperty(e.key)) {
-			this.keysDown[e.key] = true;
-		}
+		this.keysDown[e.key] = true;
 	}
 
 	keyup(e: KeyboardEvent) {
-		if (this.keysDown.hasOwnProperty(e.key)) {
-			this.keysDown[e.key] = false;
-		}
+		this.keysDown[e.key] = false;
 	}
 }
 

@@ -1,8 +1,7 @@
-import { Object3D, Event, Scene } from 'three';
+import { Scene, Vector3 } from 'three';
 import Enemy, { ENEMY_EVENTS } from './Enemy';
 import Ground from './Ground';
 import GameElement from './types/GameElement.inteface';
-import IUpdatable from './types/Updatable.interface';
 import { randomRange } from './utils/randomRange';
 
 export default class EnemyPool implements GameElement {
@@ -31,10 +30,10 @@ export default class EnemyPool implements GameElement {
 
 	add() {
 		const halfOfGroundWidth = this.ground.geometry.parameters.width / 2;
-		const enemy = new Enemy(this.ground);
-		enemy.once(ENEMY_EVENTS.DIE, this.enemyDieHandler.bind(this, enemy));
 
-		enemy.pos.set(randomRange(-halfOfGroundWidth, halfOfGroundWidth), 2, 3);
+		const position = new Vector3(randomRange(-halfOfGroundWidth, halfOfGroundWidth), 2, 3);
+		const enemy = new Enemy(this.ground, position);
+		enemy.once(ENEMY_EVENTS.DIE, this.enemyDieHandler.bind(this, enemy));
 
 		this.collection.push(enemy);
 		this.scene.add(enemy.object);

@@ -21,8 +21,14 @@ export default class Enemy extends DynamicObject<BoxGeometry> {
 
 	object = new Mesh(this.geometry, this.material);
 
-	constructor(ground: Ground) {
+	constructor(ground: Ground, position: Vector3) {
 		super(ground);
+
+		this.object.position.copy(position);
+		this.pos = position;
+
+		this.object.receiveShadow = true;
+		this.object.castShadow = true;
 	}
 
 	checkOutOfGround() {
