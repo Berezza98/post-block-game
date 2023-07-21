@@ -25,7 +25,7 @@ interface GameOptions {
 export default class Game {
 	scene = new Scene();
 
-	renderer = new WebGLRenderer();
+	renderer = new WebGLRenderer({ alpha: true });
 
 	options: GameOptions;
 

@@ -47,14 +47,14 @@ export default class Enemy extends DynamicObject<BoxGeometry> {
 		this.geometry.dispose();
 	}
 
-	appendWalkForce() {
+	appendRunSpeed() {
 		if (!this.onGround) return;
 
-		this.acc.add(new Vector3(0, randFloat(-0.03, -0.00001), 0));
+		this.acc.add(new Vector3(0, -randFloat(0.001, 0.01), 0));
 	}
 
 	beforeSetNewPosition(): void {
-		this.appendWalkForce();
+		this.appendRunSpeed();
 	}
 
 	beforeUpdate(): void {}
