@@ -2,6 +2,7 @@ import { BoxGeometry, Mesh, MeshStandardMaterial, Vector3 } from 'three';
 import DynamicObject from './DynamicObject';
 import Ground from './Ground';
 import { randomRange } from './utils/randomRange';
+import { randFloat } from 'three/src/math/MathUtils';
 
 export const ENEMY_EVENTS = {
 	DIE: 'ENEMY_DIE',
@@ -43,7 +44,7 @@ export default class Enemy extends DynamicObject<BoxGeometry> {
 	appendWalkForce() {
 		if (!this.onGround) return;
 
-		this.acc.add(new Vector3(0, randomRange(-0.001, -0.03), 0));
+		this.acc.add(new Vector3(0, randFloat(-0.03, -0.00001), 0));
 	}
 
 	beforeSetNewPosition(): void {

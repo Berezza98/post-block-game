@@ -30,7 +30,6 @@ export default class EnemyPool implements GameElement {
 	}
 
 	add() {
-		console.log('add');
 		const halfOfGroundWidth = this.ground.geometry.parameters.width / 2;
 		const enemy = new Enemy(this.ground);
 		enemy.once(ENEMY_EVENTS.DIE, this.enemyDieHandler.bind(this, enemy));
@@ -48,7 +47,6 @@ export default class EnemyPool implements GameElement {
 	}
 
 	enemyDieHandler(enemy: Enemy) {
-		console.log('die', this);
 		this.remove(enemy);
 		this.add();
 	}

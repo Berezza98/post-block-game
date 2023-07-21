@@ -7,6 +7,7 @@ import {
 	WebGLRenderer,
 } from 'three';
 import { GUI } from 'dat.gui';
+import gsap from 'gsap';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import GameElement from './types/GameElement.inteface';
 import Ground from './Ground';
@@ -34,10 +35,15 @@ export default class Game {
 
 	gameElements: GameElement[] = [];
 
+	ground: Ground;
+
 	constructor(options: GameOptions) {
 		this.options = options;
 
-		this.init();
+		this.startAnimation().then(() => {
+			this.createGameElements();
+			this.addGameElements();
+		});
 	}
 
 	setRenderer() {
@@ -47,16 +53,29 @@ export default class Game {
 		document.body.appendChild(this.renderer.domElement);
 	}
 
-	addGameElements() {
-		const ground = new Ground();
-		const enemyPool = new EnemyPool(ground, this.scene);
-		const box = new Player(ground, enemyPool);
+	createGameElements() {
+		const enemyPool = new EnemyPool(this.ground, this.scene);
+		const box = new Player(this.ground, enemyPool);
 
-		this.gameElements.push(...[ground, enemyPool, box]);
+		this.gameElements.push(...[enemyPool, box]);
+	}
+
+	addGameElements() {
+		this.gameElements.forEach((element: GameElement) => {
+			if (Array.isArray(element.object)) {
+				for (const el of element.object) {
+					this.scene.add(el);
+				}
+
+				return;
+			}
+
+			this.scene.add(element.object);
+		});
 	}
 
 	setCameraPosition() {
-		this.camera.position.set(0, -4.8, 1.1);
+		this.camera.position.set(0, -6, 1.1);
 		this.camera.rotation.set(1.3, 0, 0);
 	}
 
@@ -101,24 +120,28 @@ export default class Game {
 		this.setCameraPosition();
 		this.setLight();
 
-		this.addGameElements();
-
 		this.setGui();
-
 		this.setControls();
+	}
 
-		this.gameElements.forEach((element: GameElement) => {
-			if (Array.isArray(element.object)) {
-				for (const el of element.object) {
-					this.scene.add(el);
-				}
+	startAnimation() {
+		return new Promise((res) => {
+			this.init();
 
-				return;
-			}
+			this.ground = new Ground();
+			this.gameElements.push(this.ground);
 
-			this.scene.add(element.object);
+			this.addGameElements();
+
+			gsap.to(this.camera.position, {
+				duration: 3,
+				y: -4.8,
+				onComplete: res,
+			});
 		});
 	}
+
+	start() {}
 
 	update() {
 		this.gameElements.forEach((element: GameElement) => {

@@ -15,6 +15,8 @@ export default class Ground implements GameElement {
 
 	constructor() {
 		this.object.receiveShadow = true;
+		// ground will be static(for performance)
+		this.object.matrixAutoUpdate = false;
 	}
 
 	get rotation() {
