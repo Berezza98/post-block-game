@@ -1,4 +1,4 @@
-import { BoxGeometry, Mesh, MeshStandardMaterial, Vector3 } from 'three';
+import { BoxGeometry, Mesh, MeshStandardMaterial, Scene, Vector3 } from 'three';
 import DynamicObject from './DynamicObject';
 import Ground from './Ground';
 import { randFloat } from 'three/src/math/MathUtils';
@@ -10,18 +10,21 @@ export const ENEMY_EVENTS = {
 export default class Enemy extends DynamicObject {
 	name = 'enemy';
 
-	size = 0.4;
+	constructor(scene: Scene, ground: Ground) {
+		const size = 0.4;
+		const geometry = new BoxGeometry(size, size, size);
+		const material = new MeshStandardMaterial({
+			color: 0xff0000,
+		});
 
-	geometry = new BoxGeometry(this.size, this.size, this.size);
-
-	material = new MeshStandardMaterial({
-		color: 0xff0000,
-	});
-
-	object = new Mesh(this.geometry, this.material);
-
-	constructor(ground: Ground) {
-		super(ground);
+		super({
+			size,
+			ground,
+			scene,
+			geometry,
+			material,
+			object: Mesh,
+		});
 
 		this.object.receiveShadow = true;
 		this.object.castShadow = true;
@@ -31,11 +34,6 @@ export default class Enemy extends DynamicObject {
 		if (this.pos.y + this.size / 2 < -this.ground.height / 2) {
 			this.emit(ENEMY_EVENTS.DIE);
 		}
-	}
-
-	dispose() {
-		this.material.dispose();
-		this.geometry.dispose();
 	}
 
 	appendRunSpeed() {

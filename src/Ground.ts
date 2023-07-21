@@ -1,4 +1,4 @@
-import { PlaneGeometry, Group, DoubleSide, MeshStandardMaterial, Mesh } from 'three';
+import { PlaneGeometry, Group, DoubleSide, MeshStandardMaterial, Mesh, Scene } from 'three';
 import GameElement from './types/GameElement.inteface';
 import { degToRad } from 'three/src/math/MathUtils';
 
@@ -10,6 +10,8 @@ export default class Ground implements GameElement {
 	height = 8;
 
 	segmentWidth = 0.4;
+
+	scene: Scene;
 
 	segmentGeometry = new PlaneGeometry(this.segmentWidth, this.height);
 
@@ -30,7 +32,9 @@ export default class Ground implements GameElement {
 
 	object = new Group();
 
-	constructor() {
+	constructor(scene: Scene) {
+		this.scene = scene;
+
 		this.addGroundComponents();
 		this.addBorders();
 
@@ -75,4 +79,8 @@ export default class Ground implements GameElement {
 	}
 
 	update() {}
+
+	render() {
+		this.scene.add(this.object);
+	}
 }

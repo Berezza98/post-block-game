@@ -1,4 +1,4 @@
-import { BoxGeometry, MeshStandardMaterial, Mesh, Vector3, Box3 } from 'three';
+import { BoxGeometry, MeshStandardMaterial, Mesh, Vector3, Box3, Scene } from 'three';
 import ControllableElement from './types/ControllableElement.interface';
 import controller, { KEYS } from './Controller';
 import Ground from './Ground';
@@ -13,25 +13,30 @@ export const PLAYER_EVENTS = {
 export default class Player extends DynamicObject implements ControllableElement {
 	controller = controller;
 
-	size = 0.4;
-
 	name = 'player';
 
-	geometry = new BoxGeometry(this.size, this.size, this.size);
-
-	material = new MeshStandardMaterial({
-		color: 0x00ff00,
-	});
-
-	object = new Mesh(this.geometry, this.material);
-
 	constructor(
+		scene: Scene,
 		ground: Ground,
 		private enemyPool: EnemyPool,
 	) {
-		super(ground);
+		const size = 0.4;
+		const geometry = new BoxGeometry(size, size, size);
+		const material = new MeshStandardMaterial({
+			color: 0x00ff00,
+		});
+		const pos = new Vector3(0, -ground.height / 2 + 1, 2);
 
-		this.pos = new Vector3(0, -this.ground.height / 2 + 1, 2);
+		super({
+			size,
+			scene,
+			ground,
+			geometry,
+			material,
+			pos,
+			object: Mesh,
+		});
+
 		this.vel = new Vector3(0, 0, 0);
 
 		this.object.receiveShadow = true;
@@ -56,12 +61,9 @@ export default class Player extends DynamicObject implements ControllableElement
 
 	checkEnemiesIntersection() {
 		let playerBox = new Box3().setFromObject(this.object);
-
 		this.enemyPool.collection.forEach((enemy) => {
 			let enemyBox = new Box3().setFromObject(enemy.object);
-
 			const intersection = playerBox.intersectsBox(enemyBox);
-
 			if (intersection) console.log('INTERSECTION !!! ', enemy.object.position);
 		});
 	}

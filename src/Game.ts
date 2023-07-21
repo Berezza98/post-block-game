@@ -10,12 +10,11 @@ import {
 import { GUI } from 'dat.gui';
 import gsap from 'gsap';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
-import GameElement from './types/GameElement.inteface';
 import Ground from './Ground';
 import Player, { PLAYER_EVENTS } from './Player';
-import Enemy from './Enemy';
 import EnemyPool from './EnemyPool';
 import { mapLinear } from 'three/src/math/MathUtils';
+import IUpdatable from './types/Updatable.interface';
 
 interface GameOptions {
 	gui?: boolean;
@@ -35,7 +34,7 @@ export default class Game {
 
 	light: DirectionalLight;
 
-	gameElements: GameElement[] = [];
+	gameElements: IUpdatable[] = [];
 
 	ground: Ground;
 
@@ -46,7 +45,6 @@ export default class Game {
 
 		this.startAnimation().then(() => {
 			this.createGameElements();
-			this.addGameElements();
 			this.cameraPositionHandler();
 		});
 	}
@@ -60,29 +58,17 @@ export default class Game {
 
 	createGameElements() {
 		const enemyPool = new EnemyPool(this.ground, this.scene);
-		this.player = new Player(this.ground, enemyPool);
+		this.player = new Player(this.scene, this.ground, enemyPool);
 
-		this.gameElements.push(...[enemyPool, this.player]);
+		this.gameElements.push(enemyPool, this.player);
+
+		this.player.render();
 	}
 
 	cameraPositionHandler() {
 		this.player.on(PLAYER_EVENTS.POSITION_CHANGED, (position: Vector3) => {
 			const rotationY = mapLinear(position.x, this.player.minX, this.player.maxX, -1, 1);
 			this.camera.position.x = rotationY;
-		});
-	}
-
-	addGameElements() {
-		this.gameElements.forEach((element: GameElement) => {
-			if (Array.isArray(element.object)) {
-				for (const el of element.object) {
-					this.scene.add(el);
-				}
-
-				return;
-			}
-
-			this.scene.add(element.object);
 		});
 	}
 
@@ -140,10 +126,8 @@ export default class Game {
 		return new Promise((res) => {
 			this.init();
 
-			this.ground = new Ground();
-			this.gameElements.push(this.ground);
-
-			this.addGameElements();
+			this.ground = new Ground(this.scene);
+			this.ground.render();
 
 			gsap.to(this.camera.position, {
 				duration: 3,
@@ -156,7 +140,7 @@ export default class Game {
 	start() {}
 
 	update() {
-		this.gameElements.forEach((element: GameElement) => {
+		this.gameElements.forEach((element: IUpdatable) => {
 			element.update();
 		});
 	}

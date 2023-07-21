@@ -1,10 +1,10 @@
 import { Scene, Vector3 } from 'three';
 import Enemy, { ENEMY_EVENTS } from './Enemy';
 import Ground from './Ground';
-import GameElement from './types/GameElement.inteface';
-import { randFloat, randInt } from 'three/src/math/MathUtils';
+import { randFloat } from 'three/src/math/MathUtils';
+import IUpdatable from './types/Updatable.interface';
 
-export default class EnemyPool implements GameElement {
+export default class EnemyPool implements IUpdatable {
 	name = 'enemy-pool';
 
 	size = 4;
@@ -38,14 +38,15 @@ export default class EnemyPool implements GameElement {
 				(timeouId) => timeouId !== creationTimeout,
 			);
 
-			const enemy = new Enemy(this.ground);
+			const enemy = new Enemy(this.scene, this.ground);
 
 			const maxXPosition = this.ground.width / 2 - enemy.size / 2;
 			enemy.pos = new Vector3(randFloat(-maxXPosition, maxXPosition), 2, 3);
 			enemy.once(ENEMY_EVENTS.DIE, this.enemyDieHandler.bind(this, enemy));
 
 			this.collection.push(enemy);
-			this.scene.add(enemy.object);
+
+			enemy.render();
 		}, timeToCreation * 1000);
 
 		this.creationTimeouts.push(creationTimeout);
@@ -54,7 +55,6 @@ export default class EnemyPool implements GameElement {
 	remove(enemy: Enemy) {
 		this.collection = this.collection.filter((el) => el !== enemy);
 		enemy.dispose();
-		this.scene.remove(enemy.object);
 	}
 
 	enemyDieHandler(enemy: Enemy) {

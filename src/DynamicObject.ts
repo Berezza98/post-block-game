@@ -1,22 +1,37 @@
-import { BufferGeometry, Material, Object3D, Vector3 } from 'three';
+import { BufferGeometry, Event, Material, Object3D, Scene, Vector3 } from 'three';
 import GameElement from './types/GameElement.inteface';
 import Ground from './Ground';
 import { EventEmitter } from './EventEmitter';
+import Enemy from './Enemy';
+
+type DynamicObjectProps = {
+	size: number;
+	geometry: BufferGeometry;
+	material: Material;
+	object: new (...args: any[]) => Object3D;
+	scene: Scene;
+	ground: Ground;
+	pos?: Vector3;
+};
 
 export default abstract class DynamicObject extends EventEmitter implements GameElement {
-	pos = new Vector3();
+	abstract name: string;
 
 	vel = new Vector3();
 
 	acc = new Vector3();
 
-	abstract geometry: BufferGeometry;
+	pos: Vector3;
 
-	abstract material: Material;
+	scene: Scene;
 
-	abstract object: Object3D;
+	geometry: BufferGeometry;
 
-	abstract name: string;
+	material: Material;
+
+	object: Object3D;
+
+	ground: Ground;
 
 	size: number;
 
@@ -26,8 +41,26 @@ export default abstract class DynamicObject extends EventEmitter implements Game
 
 	abstract afterUpdate?(): void;
 
-	constructor(protected ground: Ground) {
+	constructor(props: DynamicObjectProps) {
 		super();
+
+		const {
+			scene,
+			geometry,
+			material,
+			object: ObjectConstructor,
+			ground,
+			size,
+			pos = new Vector3(),
+		} = props;
+
+		this.scene = scene;
+		this.geometry = geometry;
+		this.material = material;
+		this.object = new ObjectConstructor(this.geometry, this.material);
+		this.ground = ground;
+		this.size = size;
+		this.pos = pos;
 	}
 
 	get onGround() {
@@ -72,5 +105,17 @@ export default abstract class DynamicObject extends EventEmitter implements Game
 		this.object.position.copy(this.pos);
 
 		this.afterUpdate?.();
+	}
+
+	render() {
+		this.object.position.copy(this.pos);
+
+		this.scene.add(this.object);
+	}
+
+	dispose() {
+		this.material.dispose();
+		this.geometry.dispose();
+		this.scene.remove(this.object);
 	}
 }
