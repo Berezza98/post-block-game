@@ -67,8 +67,8 @@ export default class Game {
 
 	cameraPositionHandler() {
 		this.player.on(PLAYER_EVENTS.POSITION_CHANGED, (position: Vector3) => {
-			const rotationY = mapLinear(position.x, this.player.minX, this.player.maxX, -1, 1);
-			this.camera.position.x = rotationY;
+			const newCameraPositionX = mapLinear(position.x, this.player.minX, this.player.maxX, -1, 1);
+			this.camera.position.x = newCameraPositionX;
 		});
 	}
 
