@@ -4,6 +4,7 @@ import {
 	DirectionalLight,
 	PerspectiveCamera,
 	Scene,
+	Vector3,
 	WebGLRenderer,
 } from 'three';
 import { GUI } from 'dat.gui';
@@ -11,9 +12,10 @@ import gsap from 'gsap';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import GameElement from './types/GameElement.inteface';
 import Ground from './Ground';
-import Player from './Player';
+import Player, { PLAYER_EVENTS } from './Player';
 import Enemy from './Enemy';
 import EnemyPool from './EnemyPool';
+import { mapLinear } from 'three/src/math/MathUtils';
 
 interface GameOptions {
 	gui?: boolean;
@@ -37,12 +39,15 @@ export default class Game {
 
 	ground: Ground;
 
+	player: Player;
+
 	constructor(options: GameOptions) {
 		this.options = options;
 
 		this.startAnimation().then(() => {
 			this.createGameElements();
 			this.addGameElements();
+			this.cameraPositionHandler();
 		});
 	}
 
@@ -55,9 +60,16 @@ export default class Game {
 
 	createGameElements() {
 		const enemyPool = new EnemyPool(this.ground, this.scene);
-		const box = new Player(this.ground, enemyPool);
+		this.player = new Player(this.ground, enemyPool);
 
-		this.gameElements.push(...[enemyPool, box]);
+		this.gameElements.push(...[enemyPool, this.player]);
+	}
+
+	cameraPositionHandler() {
+		this.player.on(PLAYER_EVENTS.POSITION_CHANGED, (position: Vector3) => {
+			const rotationY = mapLinear(position.x, this.player.minX, this.player.maxX, -1, 1);
+			this.camera.position.x = rotationY;
+		});
 	}
 
 	addGameElements() {
@@ -74,7 +86,7 @@ export default class Game {
 		});
 	}
 
-	setCameraPosition() {
+	setInitialCameraPosition() {
 		this.camera.position.set(0, -6, 1.1);
 		this.camera.rotation.set(1.3, 0, 0);
 	}
@@ -117,7 +129,7 @@ export default class Game {
 	init() {
 		this.setRenderer();
 
-		this.setCameraPosition();
+		this.setInitialCameraPosition();
 		this.setLight();
 
 		this.setGui();
@@ -153,7 +165,6 @@ export default class Game {
 		if (this.controls) this.controls.update();
 
 		this.update();
-
 		this.renderer.render(this.scene, this.camera);
 
 		requestAnimationFrame(this.render.bind(this));

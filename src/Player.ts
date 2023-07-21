@@ -7,6 +7,10 @@ import DynamicObject from './DynamicObject';
 import Enemy from './Enemy';
 import EnemyPool from './EnemyPool';
 
+export const PLAYER_EVENTS = {
+	POSITION_CHANGED: 'POSITION_CHANGED',
+};
+
 export default class Player extends DynamicObject<BoxGeometry> implements ControllableElement {
 	controller = controller;
 
@@ -40,6 +44,18 @@ export default class Player extends DynamicObject<BoxGeometry> implements Contro
 		return this.pos.z - this.size / 2 > this.ground.object.position.z;
 	}
 
+	get minX() {
+		const groundBorder = this.ground.geometry.parameters.width / 2;
+
+		return -groundBorder + this.size / 2;
+	}
+
+	get maxX() {
+		const groundBorder = this.ground.geometry.parameters.width / 2;
+
+		return groundBorder - this.size / 2;
+	}
+
 	checkEnemiesIntersection() {
 		let playerBox = new Box3().setFromObject(this.object);
 
@@ -53,16 +69,14 @@ export default class Player extends DynamicObject<BoxGeometry> implements Contro
 	}
 
 	checkBorders() {
-		const groundBorder = this.ground.geometry.parameters.width / 2;
-
 		const boxSize = this.geometry.parameters.width;
 
-		if (this.pos.x + boxSize / 2 > groundBorder) {
-			this.pos.x = groundBorder - boxSize / 2;
+		if (this.pos.x > this.maxX) {
+			this.pos.x = this.maxX;
 		}
 
-		if (this.pos.x - boxSize / 2 < -groundBorder) {
-			this.pos.x = -groundBorder + boxSize / 2;
+		if (this.pos.x < this.minX) {
+			this.pos.x = this.minX;
 		}
 	}
 
@@ -71,16 +85,21 @@ export default class Player extends DynamicObject<BoxGeometry> implements Contro
 
 		if (this.controller.keysDown[KEYS.LEFT]) {
 			this.acc.add(new Vector3(-forceValue, 0, 0));
+			this.emit(PLAYER_EVENTS.POSITION_CHANGED, this.pos);
 		}
 
 		if (this.controller.keysDown[KEYS.RIGHT]) {
 			this.acc.add(new Vector3(forceValue, 0, 0));
+			this.emit(PLAYER_EVENTS.POSITION_CHANGED, this.pos);
 		}
 	}
 
 	handleJump() {
-		if (!this.controller.keysDown[KEYS.SPACE] || this.object.position.z > this.size / 2) return;
-		this.acc = this.acc.add(new Vector3(0, 0, 0.17));
+		if ((this.controller.keysDown[KEYS.SPACE] || this.controller.clicked) && !this.isFlying) {
+			this.acc = this.acc.add(new Vector3(0, 0, 0.17));
+
+			return;
+		}
 	}
 
 	controlsHandlers() {
