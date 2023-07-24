@@ -10,6 +10,8 @@ export const ENEMY_EVENTS = {
 export default class Enemy extends DynamicObject {
 	name = 'enemy';
 
+	speed = randFloat(0.008, 0.01);
+
 	constructor(scene: Scene, ground: Ground) {
 		const size = 0.4;
 		const geometry = new BoxGeometry(size, size, size);
@@ -39,7 +41,7 @@ export default class Enemy extends DynamicObject {
 	appendRunSpeed() {
 		if (!this.onGround) return;
 
-		this.acc.add(new Vector3(0, -randFloat(0.001, 0.01), 0));
+		this.acc.add(new Vector3(0, -this.speed, 0));
 	}
 
 	beforeSetNewPosition(): void {

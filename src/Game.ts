@@ -11,10 +11,11 @@ import { GUI } from 'dat.gui';
 import gsap from 'gsap';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import Ground from './Ground';
-import Player, { PLAYER_EVENTS } from './Player';
+import Player from './Player';
 import EnemyPool from './EnemyPool';
 import { mapLinear } from 'three/src/math/MathUtils';
 import IUpdatable from './types/Updatable.interface';
+import { DYNAMIC_OBJECT_EVENTS } from './DynamicObject';
 
 interface GameOptions {
 	gui?: boolean;
@@ -66,9 +67,9 @@ export default class Game {
 	}
 
 	cameraPositionHandler() {
-		this.player.on(PLAYER_EVENTS.POSITION_CHANGED, (position: Vector3) => {
+		this.player.on(DYNAMIC_OBJECT_EVENTS.POSITION_X_CHANGED, (position: Vector3) => {
 			const newCameraPositionX = mapLinear(position.x, this.player.minX, this.player.maxX, -1, 1);
-			this.camera.position.x = newCameraPositionX;
+			this.camera.position.setX(newCameraPositionX);
 		});
 	}
 

@@ -2,7 +2,10 @@ import { BufferGeometry, Event, Material, Object3D, Scene, Vector3 } from 'three
 import GameElement from './types/GameElement.inteface';
 import Ground from './Ground';
 import { EventEmitter } from './EventEmitter';
-import Enemy from './Enemy';
+
+export const DYNAMIC_OBJECT_EVENTS = {
+	POSITION_X_CHANGED: 'POSITION_X_CHANGED',
+};
 
 type DynamicObjectProps = {
 	size: number;
@@ -64,32 +67,37 @@ export default abstract class DynamicObject extends EventEmitter implements Game
 	}
 
 	get onGround() {
-		return this.pos.z - this.size / 2 <= this.ground.object.position.z;
+		return this.pos.z <= this.ground.object.position.z + this.size / 2;
 	}
 
-	addGravity() {
+	addGravityForce() {
 		const gravity = new Vector3(0, 0, -0.01);
 
-		this.acc = this.acc.add(gravity);
+		this.acc.add(gravity);
 	}
 
-	addFriction() {
-		const coef = this.onGround ? 0.8 : 0.7;
+	addFrictionForce() {
+		const frictionCoef = 0.008;
+		const frictionForce = new Vector3()
+			.copy(this.vel)
+			.normalize()
+			.multiplyScalar(-1 * frictionCoef);
 
-		this.vel = this.vel.multiply(new Vector3(coef, coef, 1));
+		this.acc.add(frictionForce);
 	}
 
 	checkGroundCollision() {
 		if (this.onGround) {
 			this.pos.z = this.ground.object.position.z + this.size / 2;
+
 			this.vel.multiply(new Vector3(1, 1, -0.6));
 			return;
 		}
 	}
 
 	update() {
-		this.addGravity();
-		this.addFriction();
+		this.addGravityForce();
+		this.addFrictionForce();
 
 		this.beforeUpdate?.();
 
@@ -101,6 +109,10 @@ export default abstract class DynamicObject extends EventEmitter implements Game
 		this.checkGroundCollision();
 
 		this.beforeSetNewPosition?.();
+
+		if (Math.abs(this.vel.x) > 0.0001) {
+			this.emit(DYNAMIC_OBJECT_EVENTS.POSITION_X_CHANGED, this.pos);
+		}
 
 		this.object.position.copy(this.pos);
 

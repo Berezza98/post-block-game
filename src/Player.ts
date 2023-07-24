@@ -3,17 +3,14 @@ import ControllableElement from './types/ControllableElement.interface';
 import controller, { KEYS } from './Controller';
 import Ground from './Ground';
 import DynamicObject from './DynamicObject';
-import Enemy from './Enemy';
 import EnemyPool from './EnemyPool';
-
-export const PLAYER_EVENTS = {
-	POSITION_CHANGED: 'POSITION_CHANGED',
-};
 
 export default class Player extends DynamicObject implements ControllableElement {
 	controller = controller;
 
 	name = 'player';
+
+	jumpForce = 0.2;
 
 	constructor(
 		scene: Scene,
@@ -64,7 +61,7 @@ export default class Player extends DynamicObject implements ControllableElement
 		this.enemyPool.collection.forEach((enemy) => {
 			let enemyBox = new Box3().setFromObject(enemy.object);
 			const intersection = playerBox.intersectsBox(enemyBox);
-			if (intersection) console.log('INTERSECTION !!! ', enemy.object.position);
+			if (intersection) console.log('INTERSECTION !!! ');
 		});
 	}
 
@@ -79,23 +76,20 @@ export default class Player extends DynamicObject implements ControllableElement
 	}
 
 	handlePositionChange() {
-		const forceValue = this.isFlying ? 0.006 : 0.01;
+		const forceValue = 0.01;
 
-		if (this.controller.keysDown[KEYS.LEFT]) {
+		if (this.controller.keysDown[KEYS.LEFT] && this.pos.x > this.minX) {
 			this.acc.add(new Vector3(-forceValue, 0, 0));
-			this.emit(PLAYER_EVENTS.POSITION_CHANGED, this.pos);
 		}
 
-		if (this.controller.keysDown[KEYS.RIGHT]) {
+		if (this.controller.keysDown[KEYS.RIGHT] && this.pos.x < this.maxX) {
 			this.acc.add(new Vector3(forceValue, 0, 0));
-			this.emit(PLAYER_EVENTS.POSITION_CHANGED, this.pos);
 		}
 	}
 
 	handleJump() {
 		if (this.controller.keysDown[KEYS.SPACE] && !this.isFlying) {
-			this.acc = this.acc.add(new Vector3(0, 0, 0.17));
-
+			this.vel.setZ(this.jumpForce);
 			return;
 		}
 	}
@@ -114,5 +108,7 @@ export default class Player extends DynamicObject implements ControllableElement
 		this.checkBorders();
 	}
 
-	afterUpdate(): void {}
+	afterUpdate(): void {
+		// console.log(this.vel);
+	}
 }
