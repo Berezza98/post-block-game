@@ -24,6 +24,8 @@ export default abstract class DynamicObject extends EventEmitter implements Game
 
 	acc = new Vector3();
 
+	rendered = false;
+
 	pos: Vector3;
 
 	scene: Scene;
@@ -96,6 +98,8 @@ export default abstract class DynamicObject extends EventEmitter implements Game
 	}
 
 	update() {
+		if (!this.rendered) return;
+
 		this.addGravityForce();
 		this.addFrictionForce();
 
@@ -123,11 +127,15 @@ export default abstract class DynamicObject extends EventEmitter implements Game
 		this.object.position.copy(this.pos);
 
 		this.scene.add(this.object);
+
+		this.rendered = true;
 	}
 
 	dispose() {
 		this.material.dispose();
 		this.geometry.dispose();
 		this.scene.remove(this.object);
+
+		this.rendered = false;
 	}
 }

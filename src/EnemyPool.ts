@@ -9,6 +9,8 @@ export default class EnemyPool implements IUpdatable {
 
 	size = 4;
 
+	diedCounter = 0;
+
 	collection: Enemy[] = [];
 
 	creationTimeouts: number[] = [];
@@ -25,7 +27,7 @@ export default class EnemyPool implements IUpdatable {
 	}
 
 	fill() {
-		new Array(this.size).fill(null).forEach(() => {
+		new Array(this.size - this.collection.length).fill(null).forEach(() => {
 			this.add();
 		});
 	}
@@ -33,18 +35,17 @@ export default class EnemyPool implements IUpdatable {
 	add() {
 		const timeToCreation = randFloat(0, 3);
 
+		const enemy = new Enemy(this.scene, this.ground);
+		this.collection.push(enemy);
+
 		const creationTimeout = setTimeout(() => {
 			this.creationTimeouts = this.creationTimeouts.filter(
 				(timeouId) => timeouId !== creationTimeout,
 			);
 
-			const enemy = new Enemy(this.scene, this.ground);
-
 			const maxXPosition = this.ground.width / 2 - enemy.size / 2;
 			enemy.pos = new Vector3(randFloat(-maxXPosition, maxXPosition), 2, 3);
 			enemy.once(ENEMY_EVENTS.DIE, this.enemyDieHandler.bind(this, enemy));
-
-			this.collection.push(enemy);
 
 			enemy.render();
 		}, timeToCreation * 1000);
@@ -58,8 +59,12 @@ export default class EnemyPool implements IUpdatable {
 	}
 
 	enemyDieHandler(enemy: Enemy) {
+		this.diedCounter++;
 		this.remove(enemy);
-		this.add();
+
+		if (this.diedCounter % 10 === 0) this.size++;
+
+		this.fill();
 	}
 
 	update() {

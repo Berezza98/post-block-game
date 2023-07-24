@@ -5,6 +5,10 @@ import Ground from './Ground';
 import DynamicObject from './DynamicObject';
 import EnemyPool from './EnemyPool';
 
+export const PLAYER_EVENTS = {
+	PLAYER_COLLISION: 'PLAYER_COLLISION',
+};
+
 export default class Player extends DynamicObject implements ControllableElement {
 	controller = controller;
 
@@ -61,7 +65,10 @@ export default class Player extends DynamicObject implements ControllableElement
 		this.enemyPool.collection.forEach((enemy) => {
 			let enemyBox = new Box3().setFromObject(enemy.object);
 			const intersection = playerBox.intersectsBox(enemyBox);
-			if (intersection) console.log('INTERSECTION !!! ');
+			if (intersection) {
+				console.log('INTERSECTION !!! ');
+				this.emit(PLAYER_EVENTS.PLAYER_COLLISION);
+			}
 		});
 	}
 

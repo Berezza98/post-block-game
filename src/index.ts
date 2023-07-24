@@ -5,4 +5,4 @@ const game = new Game({
 	// controls: true,
 });
 
-game.render();
+game.start();

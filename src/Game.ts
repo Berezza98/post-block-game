@@ -11,7 +11,7 @@ import { GUI } from 'dat.gui';
 import gsap from 'gsap';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import Ground from './Ground';
-import Player from './Player';
+import Player, { PLAYER_EVENTS } from './Player';
 import EnemyPool from './EnemyPool';
 import { mapLinear } from 'three/src/math/MathUtils';
 import IUpdatable from './types/Updatable.interface';
@@ -41,23 +41,20 @@ export default class Game {
 
 	player: Player;
 
+	stopped: boolean;
+
 	constructor(options: GameOptions) {
 		this.options = options;
-
-		this.startAnimation().then(() => {
-			this.createGameElements();
-			this.cameraPositionHandler();
-		});
 	}
 
-	setRenderer() {
+	private setRenderer() {
 		this.renderer.shadowMap.enabled = true;
 
 		this.renderer.setSize(window.innerWidth, window.innerHeight);
 		document.body.appendChild(this.renderer.domElement);
 	}
 
-	createGameElements() {
+	private createGameElements() {
 		const enemyPool = new EnemyPool(this.ground, this.scene);
 		this.player = new Player(this.scene, this.ground, enemyPool);
 
@@ -66,19 +63,19 @@ export default class Game {
 		this.player.render();
 	}
 
-	cameraPositionHandler() {
+	private cameraPositionHandler() {
 		this.player.on(DYNAMIC_OBJECT_EVENTS.POSITION_X_CHANGED, (position: Vector3) => {
 			const newCameraPositionX = mapLinear(position.x, this.player.minX, this.player.maxX, -1, 1);
 			this.camera.position.setX(newCameraPositionX);
 		});
 	}
 
-	setInitialCameraPosition() {
+	private setInitialCameraPosition() {
 		this.camera.position.set(0, -6, 1.1);
 		this.camera.rotation.set(1.3, 0, 0);
 	}
 
-	setLight() {
+	private setLight() {
 		this.light = new DirectionalLight(0xffffff, 1);
 		this.light.position.y = 3;
 		this.light.position.x = 1;
@@ -89,7 +86,7 @@ export default class Game {
 		this.scene.add(new AmbientLight(0xffffff, 0.5));
 	}
 
-	setGui() {
+	private setGui() {
 		if (!this.options.gui) return;
 
 		const gui = new GUI();
@@ -107,13 +104,13 @@ export default class Game {
 		// });
 	}
 
-	setControls() {
+	private setControls() {
 		if (!this.options.controls) return;
 
 		this.controls = new OrbitControls(this.camera, this.renderer.domElement);
 	}
 
-	init() {
+	private init() {
 		this.setRenderer();
 
 		this.setInitialCameraPosition();
@@ -123,7 +120,7 @@ export default class Game {
 		this.setControls();
 	}
 
-	startAnimation() {
+	private startAnimation() {
 		return new Promise((res) => {
 			this.init();
 
@@ -138,15 +135,31 @@ export default class Game {
 		});
 	}
 
-	start() {}
+	start() {
+		this.render();
 
-	update() {
+		this.startAnimation().then(() => {
+			this.createGameElements();
+			this.cameraPositionHandler();
+
+			this.player.on(PLAYER_EVENTS.PLAYER_COLLISION, this.stop.bind(this));
+		});
+	}
+
+	private stop() {
+		console.log('stop');
+		this.stopped = true;
+	}
+
+	private update() {
 		this.gameElements.forEach((element: IUpdatable) => {
 			element.update();
 		});
 	}
 
-	render() {
+	private render() {
+		if (this.stopped) return;
+
 		if (this.controls) this.controls.update();
 
 		this.update();
