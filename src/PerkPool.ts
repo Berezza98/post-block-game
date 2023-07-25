@@ -1,17 +1,17 @@
 import { Scene, Vector3 } from 'three';
-import Enemy, { ENEMY_EVENTS } from './Enemy';
+import Perk, { PERK_EVENTS } from './Perk';
 import Ground from './Ground';
-import { randFloat } from 'three/src/math/MathUtils';
+import { randFloat, randInt } from 'three/src/math/MathUtils';
 import IUpdatable from './types/Updatable.interface';
 
-export default class EnemyPool implements IUpdatable {
-	name = 'enemy-pool';
+export default class PerkPool implements IUpdatable {
+	name = 'perk-pool';
 
-	size = 4;
+	size = 1;
 
 	diedCounter = 0;
 
-	collection: Enemy[] = [];
+	collection: Perk[] = [];
 
 	creationTimeouts: number[] = [];
 
@@ -23,7 +23,7 @@ export default class EnemyPool implements IUpdatable {
 	}
 
 	get object() {
-		return this.collection.map((enemy) => enemy);
+		return this.collection.map((perk) => perk);
 	}
 
 	fill() {
@@ -33,34 +33,34 @@ export default class EnemyPool implements IUpdatable {
 	}
 
 	add() {
-		const timeToCreation = randFloat(0, 3);
+		const timeToCreation = randInt(2, 5);
 
-		const enemy = new Enemy(this.scene, this.ground);
-		this.collection.push(enemy);
+		const perk = new Perk(this.scene, this.ground);
+		this.collection.push(perk);
 
 		const creationTimeout = setTimeout(() => {
 			this.creationTimeouts = this.creationTimeouts.filter(
 				(timeouId) => timeouId !== creationTimeout,
 			);
 
-			const maxXPosition = this.ground.width / 2 - enemy.size / 2;
-			enemy.pos = new Vector3(randFloat(-maxXPosition, maxXPosition), 2, 3);
-			enemy.addEventListener(ENEMY_EVENTS.DIE, this.enemyDieHandler.bind(this, enemy));
+			const maxXPosition = this.ground.width / 2 - perk.size / 2;
+			perk.pos = new Vector3(randFloat(-maxXPosition, maxXPosition), 2, 3);
+			perk.addEventListener(PERK_EVENTS.DIE, this.perkDieHandler.bind(this, perk));
 
-			enemy.render();
+			perk.render();
 		}, timeToCreation * 1000);
 
 		this.creationTimeouts.push(creationTimeout);
 	}
 
-	remove(enemy: Enemy) {
-		this.collection = this.collection.filter((el) => el !== enemy);
-		enemy.dispose();
+	remove(perk: Perk) {
+		this.collection = this.collection.filter((el) => el !== perk);
+		perk.dispose();
 	}
 
-	enemyDieHandler(enemy: Enemy) {
+	perkDieHandler(perk: Perk) {
 		this.diedCounter++;
-		this.remove(enemy);
+		this.remove(perk);
 
 		if (this.diedCounter % 10 === 0) this.size++;
 

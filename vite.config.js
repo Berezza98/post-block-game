@@ -5,7 +5,7 @@ export default defineConfig(({ command, mode }) => {
 	return {
 		server: {
 			host: true,
-			port: 3000,
+			// port: 3000,
 		},
 		build: {
 			outDir: './dist',

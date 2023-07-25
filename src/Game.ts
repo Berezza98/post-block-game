@@ -16,6 +16,7 @@ import EnemyPool from './EnemyPool';
 import { mapLinear } from 'three/src/math/MathUtils';
 import IUpdatable from './types/Updatable.interface';
 import { DYNAMIC_OBJECT_EVENTS } from './DynamicObject';
+import PerkPool from './PerkPool';
 
 interface GameOptions {
 	gui?: boolean;
@@ -56,15 +57,23 @@ export default class Game {
 
 	private createGameElements() {
 		const enemyPool = new EnemyPool(this.ground, this.scene);
-		this.player = new Player(this.scene, this.ground, enemyPool);
+		const perkPool = new PerkPool(this.ground, this.scene);
+		this.player = new Player({
+			scene: this.scene,
+			ground: this.ground,
+			enemyPool,
+			perkPool,
+		});
 
-		this.gameElements.push(enemyPool, this.player);
+		this.gameElements.push(enemyPool, perkPool, this.player);
 
 		this.player.render();
 	}
 
 	private cameraPositionHandler() {
-		this.player.on(DYNAMIC_OBJECT_EVENTS.POSITION_X_CHANGED, (position: Vector3) => {
+		this.player.addEventListener(DYNAMIC_OBJECT_EVENTS.POSITION_X_CHANGED, (event) => {
+			const position: Vector3 = event.message;
+
 			const newCameraPositionX = mapLinear(position.x, this.player.minX, this.player.maxX, -1, 1);
 			this.camera.position.setX(newCameraPositionX);
 		});
@@ -142,7 +151,7 @@ export default class Game {
 			this.createGameElements();
 			this.cameraPositionHandler();
 
-			this.player.on(PLAYER_EVENTS.PLAYER_COLLISION, this.stop.bind(this));
+			this.player.addEventListener(PLAYER_EVENTS.PLAYER_COLLISION, this.stop.bind(this));
 		});
 	}
 
