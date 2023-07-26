@@ -10,12 +10,26 @@ export class JumpButton {
 
 	private activeClassName = 'active';
 
+	private hiddenClassName = 'hidden';
+
+	private _visible = false;
+
 	constructor({ className, size }: JumpButtonProps) {
 		this.element.innerText = 'Jump';
 		this.element.classList.add(className);
 		this.element.style.height = this.element.style.width = `${size}px`;
+		this.visible = false;
 
 		this.addListeners();
+	}
+
+	get visible() {
+		return this._visible;
+	}
+
+	set visible(value) {
+		this.element.classList[value ? 'remove' : 'add'](this.hiddenClassName);
+		this._visible = value;
 	}
 
 	get isPressed() {
@@ -28,7 +42,7 @@ export class JumpButton {
 		this._isPressed = value;
 	}
 
-	addListeners() {
+	private addListeners() {
 		this.element.addEventListener('pointerdown', () => {
 			this.isPressed = true;
 		});
@@ -36,6 +50,10 @@ export class JumpButton {
 		this.element.addEventListener('pointerup', () => {
 			this.isPressed = false;
 		});
+	}
+
+	show() {
+		this.visible = true;
 	}
 
 	append(parent: HTMLElement) {

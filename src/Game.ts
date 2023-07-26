@@ -167,6 +167,9 @@ export default class Game {
 		this.render();
 
 		this.startAnimation().then(() => {
+			this.jumpButton?.show();
+			this.joystick?.show();
+
 			this.createGameElements();
 			this.cameraPositionHandler();
 

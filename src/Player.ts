@@ -32,11 +32,11 @@ export default class Player
 
 	private activePerksManager = new ActivePerksManager(this);
 
+	private maxSpeed = 0.05;
+
 	controller = controller;
 
 	name = 'player';
-
-	jumpForce = 0.2;
 
 	joystick?: Joystick;
 
@@ -141,6 +141,12 @@ export default class Player
 		}
 	}
 
+	restrictMaxSpeed() {
+		if (Math.abs(this.vel.x) > this.maxSpeed) {
+			this.vel.setX(Math.sign(this.vel.x) * this.maxSpeed);
+		}
+	}
+
 	handlePositionChange() {
 		const forceValue = this.joystick ? 0.009 : 0.01;
 
@@ -159,10 +165,12 @@ export default class Player
 	}
 
 	handleJump() {
+		const jumpForce = 0.2;
+
 		const mobileJumpBtnPressed = this.jumpButton && this.jumpButton.isPressed;
 
 		if ((this.controller.keysDown[KEYS.SPACE] || mobileJumpBtnPressed) && !this.isFlying) {
-			this.vel.setZ(this.jumpForce);
+			this.vel.setZ(jumpForce);
 		}
 	}
 
@@ -179,6 +187,7 @@ export default class Player
 
 	beforeSetNewPosition(): void {
 		this.checkBorders();
+		this.restrictMaxSpeed();
 	}
 
 	afterUpdate(): void {

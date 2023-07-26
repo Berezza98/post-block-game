@@ -19,6 +19,10 @@ export class Joystick {
 
 	private removeLastValue: boolean;
 
+	private _visible = false;
+
+	private hiddenClassName = 'hidden';
+
 	constructor({ className, size, removeLastValue }: JoystickProps) {
 		this.canvas = document.createElement('canvas');
 		this.canvas.classList.add(className);
@@ -27,9 +31,19 @@ export class Joystick {
 		this.radius = this.canvas.width / 2;
 		this.innerRadius = this.radius / 2;
 		this.removeLastValue = removeLastValue;
+		this.visible = false;
 
 		this.addListeners();
 		this.draw();
+	}
+
+	get visible() {
+		return this._visible;
+	}
+
+	set visible(value) {
+		this.canvas.classList[value ? 'remove' : 'add'](this.hiddenClassName);
+		this._visible = value;
 	}
 
 	get data() {
@@ -118,5 +132,9 @@ export class Joystick {
 
 	remove() {
 		this.canvas.remove();
+	}
+
+	show() {
+		this.visible = true;
 	}
 }
