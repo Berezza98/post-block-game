@@ -6,6 +6,8 @@ import DynamicObject from './DynamicObject';
 import EnemyPool from './EnemyPool';
 import PerkPool from './PerkPool';
 import { ActivePerksManager } from './perks/ActivePerksManager';
+import { Joystick } from './Joystick';
+import { JumpButton } from './JumpButton';
 
 export const PLAYER_EVENTS = {
 	PLAYER_COLLISION: 'PLAYER_COLLISION',
@@ -16,6 +18,8 @@ interface PlayerProps {
 	ground: Ground;
 	enemyPool: EnemyPool;
 	perkPool: PerkPool;
+	joystick?: Joystick;
+	jumpButton?: JumpButton;
 }
 
 export default class Player
@@ -34,9 +38,13 @@ export default class Player
 
 	jumpForce = 0.2;
 
+	joystick?: Joystick;
+
+	jumpButton?: JumpButton;
+
 	_hasShield = false;
 
-	constructor({ scene, ground, enemyPool, perkPool }: PlayerProps) {
+	constructor({ scene, ground, enemyPool, perkPool, joystick, jumpButton }: PlayerProps) {
 		const size = 0.4;
 		const geometry = new BoxGeometry(size, size, size);
 		const material = new MeshStandardMaterial({
@@ -55,6 +63,8 @@ export default class Player
 
 		this.enemyPool = enemyPool;
 		this.perkPool = perkPool;
+		this.joystick = joystick;
+		this.jumpButton = jumpButton;
 
 		this.vel = new Vector3(0, 0, 0);
 
@@ -132,7 +142,12 @@ export default class Player
 	}
 
 	handlePositionChange() {
-		const forceValue = 0.01;
+		const forceValue = this.joystick ? 0.009 : 0.01;
+
+		if (this.joystick) {
+			this.acc.add(new Vector3(forceValue * this.joystick.data.x, 0, 0));
+			return;
+		}
 
 		if (this.controller.keysDown[KEYS.LEFT] && this.pos.x > this.minX) {
 			this.acc.add(new Vector3(-forceValue, 0, 0));
@@ -144,9 +159,10 @@ export default class Player
 	}
 
 	handleJump() {
-		if (this.controller.keysDown[KEYS.SPACE] && !this.isFlying) {
+		const mobileJumpBtnPressed = this.jumpButton && this.jumpButton.isPressed;
+
+		if ((this.controller.keysDown[KEYS.SPACE] || mobileJumpBtnPressed) && !this.isFlying) {
 			this.vel.setZ(this.jumpForce);
-			return;
 		}
 	}
 

@@ -1,6 +1,5 @@
 import {
 	AmbientLight,
-	CameraHelper,
 	DirectionalLight,
 	PerspectiveCamera,
 	Scene,
@@ -17,6 +16,9 @@ import { mapLinear } from 'three/src/math/MathUtils';
 import IUpdatable from './types/Updatable.interface';
 import { DYNAMIC_OBJECT_EVENTS } from './DynamicObject';
 import PerkPool from './PerkPool';
+import { Joystick } from './Joystick';
+import { isMobile } from './helpers/isMobile';
+import { JumpButton } from './JumpButton';
 
 interface GameOptions {
 	gui?: boolean;
@@ -44,6 +46,10 @@ export default class Game {
 
 	stopped: boolean;
 
+	joystick?: Joystick;
+
+	jumpButton?: JumpButton;
+
 	constructor(options: GameOptions) {
 		this.options = options;
 	}
@@ -61,6 +67,8 @@ export default class Game {
 		this.player = new Player({
 			scene: this.scene,
 			ground: this.ground,
+			joystick: this.joystick,
+			jumpButton: this.jumpButton,
 			enemyPool,
 			perkPool,
 		});
@@ -95,6 +103,15 @@ export default class Game {
 		this.scene.add(new AmbientLight(0xffffff, 0.5));
 	}
 
+	private setMobileControls() {
+		if (!isMobile.any()) return;
+
+		this.joystick = new Joystick({ className: 'joystick', size: 400, removeLastValue: true });
+		this.jumpButton = new JumpButton({ className: 'jump-btn', size: 400 });
+		this.joystick.append(document.body);
+		this.jumpButton.append(document.body);
+	}
+
 	private setGui() {
 		if (!this.options.gui) return;
 
@@ -124,6 +141,8 @@ export default class Game {
 
 		this.setInitialCameraPosition();
 		this.setLight();
+
+		this.setMobileControls();
 
 		this.setGui();
 		this.setControls();
