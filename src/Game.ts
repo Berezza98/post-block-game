@@ -19,6 +19,7 @@ import { Perks } from './Perks';
 import { Joystick } from './Joystick';
 import { isMobile } from './helpers/isMobile';
 import { JumpButton } from './JumpButton';
+import { Score } from './Score';
 import Background from './Background';
 
 interface GameOptions {
@@ -53,6 +54,8 @@ export default class Game {
 
 	background = new Background();
 
+	score = new Score();
+
 	constructor(options: GameOptions) {
 		this.options = options;
 	}
@@ -72,6 +75,7 @@ export default class Game {
 			ground: this.ground,
 			joystick: this.joystick,
 			jumpButton: this.jumpButton,
+			score: this.score,
 			enemies,
 			perks,
 		});
@@ -174,6 +178,7 @@ export default class Game {
 			this.jumpButton?.show();
 			this.joystick?.show();
 
+			this.score.render();
 			this.createGameElements();
 			this.cameraPositionHandler();
 

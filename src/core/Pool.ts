@@ -1,5 +1,3 @@
-import { Vector3 } from 'three';
-import { randFloat } from 'three/src/math/MathUtils';
 import GameElement from '../types/GameElement.inteface';
 import IUpdatable from '../types/Updatable.interface';
 

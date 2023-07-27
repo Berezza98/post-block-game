@@ -79,3 +79,14 @@ body {
 	height: 100dvh;
 	width: 100dvw;
 }
+
+.score {
+	position: absolute;
+	top: 20px;
+	right: 20px;
+	z-index: 2;
+	color: white;
+	font-size: 80px;
+	font-weight: 600;
+	font-family: sans-serif;
+}

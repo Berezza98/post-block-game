@@ -8,6 +8,7 @@ import { Perks } from './Perks';
 import { ActivePerksManager } from './perks/ActivePerksManager';
 import { Joystick } from './Joystick';
 import { JumpButton } from './JumpButton';
+import { Score } from './Score';
 
 export const PLAYER_EVENTS = {
 	PLAYER_COLLISION: 'PLAYER_COLLISION',
@@ -20,6 +21,7 @@ interface PlayerProps {
 	perks: Perks;
 	joystick?: Joystick;
 	jumpButton?: JumpButton;
+	score: Score;
 }
 
 export default class Player
@@ -38,13 +40,15 @@ export default class Player
 
 	name = 'player';
 
+	score: Score;
+
 	joystick?: Joystick;
 
 	jumpButton?: JumpButton;
 
 	_hasShield = false;
 
-	constructor({ scene, ground, enemies, perks, joystick, jumpButton }: PlayerProps) {
+	constructor({ scene, ground, enemies, perks, joystick, jumpButton, score }: PlayerProps) {
 		const size = 0.4;
 		const geometry = new BoxGeometry(size, size, size);
 		const material = new MeshStandardMaterial({
@@ -65,6 +69,7 @@ export default class Player
 		this.perks = perks;
 		this.joystick = joystick;
 		this.jumpButton = jumpButton;
+		this.score = score;
 
 		this.vel = new Vector3(0, 0, 0);
 
@@ -104,16 +109,17 @@ export default class Player
 
 	private checkEnemiesIntersection() {
 		let playerBox = new Box3().setFromObject(this);
-		this.enemies.collection.forEach((obj) => {
-			let enemyBox = new Box3().setFromObject(obj);
+		this.enemies.collection.forEach((enemy) => {
+			const enemyBox = new Box3().setFromObject(enemy);
 			const intersection = playerBox.intersectsBox(enemyBox);
+
 			if (intersection) {
-				if (this.hasShield) {
-					this.enemies.remove(obj);
+				if (this.hasShield || this.position.z >= enemyBox.max.z) {
+					this.enemies.remove(enemy);
+					this.score.increase(this.hasShield ? 1 : 2);
 					return;
 				}
 
-				console.log('INTERSECTION !!! ');
 				this.dispatchEvent({ type: PLAYER_EVENTS.PLAYER_COLLISION });
 			}
 		});
