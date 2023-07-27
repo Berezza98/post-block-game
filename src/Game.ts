@@ -11,11 +11,11 @@ import gsap from 'gsap';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import Ground from './Ground';
 import Player, { PLAYER_EVENTS } from './Player';
-import EnemyPool from './EnemyPool';
+import { Enemies } from './Enemies';
 import { mapLinear } from 'three/src/math/MathUtils';
 import IUpdatable from './types/Updatable.interface';
-import { DYNAMIC_OBJECT_EVENTS } from './DynamicObject';
-import PerkPool from './PerkPool';
+import { DYNAMIC_OBJECT_EVENTS } from './core/DynamicObject';
+import { Perks } from './Perks';
 import { Joystick } from './Joystick';
 import { isMobile } from './helpers/isMobile';
 import { JumpButton } from './JumpButton';
@@ -65,18 +65,18 @@ export default class Game {
 	}
 
 	private createGameElements() {
-		const enemyPool = new EnemyPool(this.ground, this.scene);
-		const perkPool = new PerkPool(this.ground, this.scene);
+		const enemies = new Enemies(this.ground, this.scene);
+		const perks = new Perks(this.ground, this.scene);
 		this.player = new Player({
 			scene: this.scene,
 			ground: this.ground,
 			joystick: this.joystick,
 			jumpButton: this.jumpButton,
-			enemyPool,
-			perkPool,
+			enemies,
+			perks,
 		});
 
-		this.gameElements.push(enemyPool, perkPool, this.player);
+		this.gameElements.push(enemies, perks, this.player);
 
 		this.player.render();
 	}

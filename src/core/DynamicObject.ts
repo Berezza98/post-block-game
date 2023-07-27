@@ -1,6 +1,6 @@
 import { BufferGeometry, Material, Mesh, NormalBufferAttributes, Scene, Vector3 } from 'three';
-import GameElement from './types/GameElement.inteface';
-import Ground from './Ground';
+import GameElement from '../types/GameElement.inteface';
+import Ground from '../Ground';
 
 export const DYNAMIC_OBJECT_EVENTS = {
 	POSITION_X_CHANGED: 'POSITION_X_CHANGED',

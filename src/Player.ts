@@ -2,9 +2,9 @@ import { BoxGeometry, MeshStandardMaterial, Mesh, Vector3, Box3, Scene } from 't
 import ControllableElement from './types/ControllableElement.interface';
 import controller, { KEYS } from './Controller';
 import Ground from './Ground';
-import DynamicObject from './DynamicObject';
-import EnemyPool from './EnemyPool';
-import PerkPool from './PerkPool';
+import DynamicObject from './core/DynamicObject';
+import { Enemies } from './Enemies';
+import { Perks } from './Perks';
 import { ActivePerksManager } from './perks/ActivePerksManager';
 import { Joystick } from './Joystick';
 import { JumpButton } from './JumpButton';
@@ -16,8 +16,8 @@ export const PLAYER_EVENTS = {
 interface PlayerProps {
 	scene: Scene;
 	ground: Ground;
-	enemyPool: EnemyPool;
-	perkPool: PerkPool;
+	enemies: Enemies;
+	perks: Perks;
 	joystick?: Joystick;
 	jumpButton?: JumpButton;
 }
@@ -26,9 +26,9 @@ export default class Player
 	extends DynamicObject<BoxGeometry, MeshStandardMaterial>
 	implements ControllableElement
 {
-	private enemyPool: EnemyPool;
+	private enemies: Enemies;
 
-	private perkPool: PerkPool;
+	private perks: Perks;
 
 	private activePerksManager = new ActivePerksManager(this);
 
@@ -44,7 +44,7 @@ export default class Player
 
 	_hasShield = false;
 
-	constructor({ scene, ground, enemyPool, perkPool, joystick, jumpButton }: PlayerProps) {
+	constructor({ scene, ground, enemies, perks, joystick, jumpButton }: PlayerProps) {
 		const size = 0.4;
 		const geometry = new BoxGeometry(size, size, size);
 		const material = new MeshStandardMaterial({
@@ -61,8 +61,8 @@ export default class Player
 			material,
 		});
 
-		this.enemyPool = enemyPool;
-		this.perkPool = perkPool;
+		this.enemies = enemies;
+		this.perks = perks;
 		this.joystick = joystick;
 		this.jumpButton = jumpButton;
 
@@ -104,12 +104,12 @@ export default class Player
 
 	private checkEnemiesIntersection() {
 		let playerBox = new Box3().setFromObject(this);
-		this.enemyPool.collection.forEach((enemy) => {
-			let enemyBox = new Box3().setFromObject(enemy);
+		this.enemies.collection.forEach((obj) => {
+			let enemyBox = new Box3().setFromObject(obj);
 			const intersection = playerBox.intersectsBox(enemyBox);
 			if (intersection) {
 				if (this.hasShield) {
-					this.enemyPool.enemyDieHandler(enemy);
+					this.enemies.remove(obj);
 					return;
 				}
 
@@ -121,12 +121,12 @@ export default class Player
 
 	private checkPerkIntersection() {
 		let playerBox = new Box3().setFromObject(this);
-		this.perkPool.collection.forEach((perk) => {
+		this.perks.collection.forEach((perk) => {
 			let perkBox = new Box3().setFromObject(perk);
 			const intersection = playerBox.intersectsBox(perkBox);
 			if (intersection) {
 				this.activePerksManager.add(perk.type);
-				this.perkPool.perkDieHandler(perk);
+				this.perks.remove(perk);
 			}
 		});
 	}

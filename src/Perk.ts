@@ -1,5 +1,5 @@
 import { BoxGeometry, Mesh, MeshStandardMaterial, Scene, Vector3 } from 'three';
-import DynamicObject from './DynamicObject';
+import DynamicObject from './core/DynamicObject';
 import Ground from './Ground';
 import { randFloat, randInt } from 'three/src/math/MathUtils';
 import { PERK_TYPES } from './consts/perks';

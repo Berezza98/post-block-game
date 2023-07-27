@@ -1,5 +1,6 @@
 import Game from './Game';
 try {
+	console.log('try to start');
 	const game = new Game({
 		// gui: true,
 		// controls: true,
@@ -7,5 +8,5 @@ try {
 
 	game.start();
 } catch (e) {
-	document.write(JSON.stringify(e));
+	console.log(e);
 }

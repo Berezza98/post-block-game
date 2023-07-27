@@ -80,6 +80,8 @@ export default class Ground implements GameElement {
 
 	update() {}
 
+	dispose() {}
+
 	render() {
 		this.scene.add(this.object);
 	}
