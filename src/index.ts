@@ -1,8 +1,11 @@
 import Game from './Game';
+try {
+	const game = new Game({
+		// gui: true,
+		// controls: true,
+	});
 
-const game = new Game({
-	// gui: true,
-	// controls: true,
-});
-
-game.start();
+	game.start();
+} catch (e) {
+	document.write(JSON.stringify(e));
+}

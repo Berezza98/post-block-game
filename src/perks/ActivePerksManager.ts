@@ -6,9 +6,11 @@ import { ACTIVE_PERK_EVENTS, ActivePerk } from './ActivePerk';
 export class ActivePerksManager {
 	collection: ActivePerk[] = [];
 
-	private activePerkFabric = new ActivePerkFabric(this.player);
+	activePerkFabric: ActivePerkFabric;
 
-	constructor(private player: Player) {}
+	constructor(private player: Player) {
+		this.activePerkFabric = new ActivePerkFabric(this.player);
+	}
 
 	getExistedType(type: PerkType): ActivePerk | undefined {
 		return this.collection.find((perk: ActivePerk) => perk.type === type);

@@ -10,7 +10,6 @@ html {
 body {
 	overflow: hidden;
 	margin: 0;
-	background-image: url('./assets/space.jpg');
 	background-size: contain;
 	overscroll-behavior-y: none;
 }
@@ -72,4 +71,11 @@ body {
 
 .hidden {
 	display: none;
+}
+
+.bg {
+	position: absolute;
+	z-index: -1;
+	height: 100dvh;
+	width: 100dvw;
 }

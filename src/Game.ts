@@ -19,6 +19,7 @@ import PerkPool from './PerkPool';
 import { Joystick } from './Joystick';
 import { isMobile } from './helpers/isMobile';
 import { JumpButton } from './JumpButton';
+import Background from './Background';
 
 interface GameOptions {
 	gui?: boolean;
@@ -49,6 +50,8 @@ export default class Game {
 	joystick?: Joystick;
 
 	jumpButton?: JumpButton;
+
+	background = new Background();
 
 	constructor(options: GameOptions) {
 		this.options = options;
@@ -164,6 +167,7 @@ export default class Game {
 	}
 
 	start() {
+		this.background.start();
 		this.render();
 
 		this.startAnimation().then(() => {
