@@ -1,13 +1,11 @@
 import GameElement from '../types/GameElement.inteface';
-import IUpdatable from '../types/Updatable.interface';
+import { UpdateStructure } from './UpdateStructure';
 
 interface PoolParams {
 	size: number;
 }
 
-export abstract class Pool<TElement extends GameElement> implements IUpdatable {
-	public collection: TElement[] = [];
-
+export abstract class Pool<TElement extends GameElement> extends UpdateStructure<TElement> {
 	public size: number;
 
 	protected restored: number = 0;
@@ -15,6 +13,8 @@ export abstract class Pool<TElement extends GameElement> implements IUpdatable {
 	protected disposed = false;
 
 	constructor({ size }: PoolParams) {
+		super();
+
 		this.size = size;
 	}
 
@@ -30,7 +30,7 @@ export abstract class Pool<TElement extends GameElement> implements IUpdatable {
 		new Array(this.size - this.collection.length).fill(null).forEach(() => {
 			const element = this.create();
 
-			this.collection.push(element);
+			this.add(element);
 		});
 	}
 
@@ -39,11 +39,12 @@ export abstract class Pool<TElement extends GameElement> implements IUpdatable {
 	abstract increaseCondition(): number | void;
 
 	public remove(element: TElement) {
-		const inCollection = this.collection.find((el) => el === element);
+		const inCollection = this.includes(element);
 		if (!inCollection) return;
 
 		this.restored++;
-		this.collection = this.collection.filter((el) => el !== element);
+		super.remove(element);
+
 		element.dispose();
 
 		const increaseValue = this.increaseCondition();
@@ -51,12 +52,6 @@ export abstract class Pool<TElement extends GameElement> implements IUpdatable {
 		if (increaseValue) this.increaseSize(increaseValue);
 
 		this.fill();
-	}
-
-	public update() {
-		for (const element of this.collection) {
-			element.update();
-		}
 	}
 
 	public dispose() {

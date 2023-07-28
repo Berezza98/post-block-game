@@ -1,17 +1,17 @@
 import IUpdatable from '../types/Updatable.interface';
 
-export class UpdateStructure implements IUpdatable {
-	private collection: IUpdatable[] = [];
+export class UpdateStructure<TUpdatable extends IUpdatable = IUpdatable> implements IUpdatable {
+	protected collection: TUpdatable[] = [];
 
-	add(...items: IUpdatable[]) {
+	add(...items: TUpdatable[]) {
 		this.collection.push(...items);
 	}
 
-	remove(item: IUpdatable) {
+	remove(item: TUpdatable) {
 		this.collection = this.collection.filter((el) => el !== item);
 	}
 
-	includes(item: IUpdatable): boolean {
+	protected includes(item: TUpdatable): boolean {
 		return this.collection.includes(item);
 	}
 
@@ -20,7 +20,7 @@ export class UpdateStructure implements IUpdatable {
 			for (const item of elements) {
 				item.update();
 
-				if (item.innerObjects) innerUpdate(item.innerObjects);
+				if (item.innerObjects) innerUpdate(item.innerObjects.collection);
 			}
 		};
 
