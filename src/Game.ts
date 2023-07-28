@@ -21,6 +21,7 @@ import { isMobile } from './helpers/isMobile';
 import { JumpButton } from './JumpButton';
 import { Score } from './Score';
 import Background from './Background';
+import { UpdateStructure } from './core/UpdateStructure';
 
 interface GameOptions {
 	gui?: boolean;
@@ -40,7 +41,7 @@ export default class Game {
 
 	light: DirectionalLight;
 
-	gameElements: IUpdatable[] = [];
+	gameElements = new UpdateStructure();
 
 	ground: Ground;
 
@@ -80,7 +81,7 @@ export default class Game {
 			perks,
 		});
 
-		this.gameElements.push(enemies, perks, this.player);
+		this.gameElements.add(enemies, perks, this.player);
 
 		this.player.render();
 	}
@@ -192,9 +193,7 @@ export default class Game {
 	}
 
 	private update() {
-		this.gameElements.forEach((element: IUpdatable) => {
-			element.update();
-		});
+		this.gameElements.update();
 	}
 
 	private render() {
