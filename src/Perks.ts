@@ -1,8 +1,9 @@
 import { Scene, Vector3 } from 'three';
-import Perk, { PERK_EVENTS } from './Perk';
+import Perk from './Perk';
 import Ground from './Ground';
 import { randFloat, randInt } from 'three/src/math/MathUtils';
 import { Pool } from './core/Pool';
+import { DYNAMIC_OBJECT_EVENTS } from './core/DynamicObject';
 
 export class Perks extends Pool<Perk> {
 	name = 'perk-pool';
@@ -26,7 +27,7 @@ export class Perks extends Pool<Perk> {
 
 			const maxXPosition = this.ground.width / 2 - perk.size / 2;
 			perk.pos = new Vector3(randFloat(-maxXPosition, maxXPosition), 2, 3);
-			perk.addEventListener(PERK_EVENTS.DIE, () => {
+			perk.addEventListener(DYNAMIC_OBJECT_EVENTS.DIE, () => {
 				this.remove(perk);
 			});
 

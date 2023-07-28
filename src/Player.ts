@@ -116,7 +116,7 @@ export default class Player
 
 			if (intersection) {
 				if (this.hasShield || this.position.z >= enemyBox.max.z) {
-					this.enemies.remove(enemy);
+					enemy.kill();
 					this.score.increase(this.hasShield ? 1 : 2);
 					return;
 				}
@@ -134,7 +134,7 @@ export default class Player
 			const intersection = playerBox.intersectsBox(perkBox);
 			if (intersection) {
 				this.activePerksManager.add(perk.type);
-				this.perks.remove(perk);
+				perk.kill();
 			}
 		}
 	}

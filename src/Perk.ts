@@ -5,10 +5,6 @@ import { randFloat, randInt } from 'three/src/math/MathUtils';
 import { PERK_TYPES } from './consts/perks';
 import { PerkType } from './types/PerkTypes';
 
-export const PERK_EVENTS = {
-	DIE: 'PERK_DIE',
-};
-
 export default class Perk extends DynamicObject<BoxGeometry, MeshStandardMaterial> {
 	name = 'perk';
 
@@ -37,7 +33,7 @@ export default class Perk extends DynamicObject<BoxGeometry, MeshStandardMateria
 
 	checkOutOfGround() {
 		if (this.pos.y + this.size / 2 < -this.ground.height / 2) {
-			this.dispatchEvent({ type: PERK_EVENTS.DIE });
+			this.kill();
 		}
 	}
 

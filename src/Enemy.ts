@@ -3,10 +3,6 @@ import DynamicObject from './core/DynamicObject';
 import Ground from './Ground';
 import { randFloat } from 'three/src/math/MathUtils';
 
-export const ENEMY_EVENTS = {
-	DIE: 'ENEMY_DIE',
-};
-
 export default class Enemy extends DynamicObject<BoxGeometry, MeshStandardMaterial> {
 	name = 'enemy';
 
@@ -33,7 +29,7 @@ export default class Enemy extends DynamicObject<BoxGeometry, MeshStandardMateri
 
 	checkOutOfGround() {
 		if (this.pos.y + this.size / 2 < -this.ground.height / 2) {
-			this.dispatchEvent({ type: ENEMY_EVENTS.DIE });
+			this.kill();
 		}
 	}
 

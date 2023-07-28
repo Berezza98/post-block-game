@@ -4,6 +4,7 @@ import Ground from '../Ground';
 
 export const DYNAMIC_OBJECT_EVENTS = {
 	POSITION_X_CHANGED: 'POSITION_X_CHANGED',
+	DIE: 'DYNAMIC_OBJECT_DIE',
 };
 
 type DynamicObjectProps<TGeometry, TMaterial> = {
@@ -122,5 +123,10 @@ export default abstract class DynamicObject<
 		this.scene.remove(this);
 
 		this.rendered = false;
+	}
+
+	kill() {
+		this.dispatchEvent({ type: DYNAMIC_OBJECT_EVENTS.DIE });
+		this.dispose();
 	}
 }
