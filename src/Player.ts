@@ -109,7 +109,8 @@ export default class Player
 
 	private checkEnemiesIntersection() {
 		let playerBox = new Box3().setFromObject(this);
-		this.enemies.collection.forEach((enemy) => {
+
+		for (const enemy of this.enemies) {
 			const enemyBox = new Box3().setFromObject(enemy);
 			const intersection = playerBox.intersectsBox(enemyBox);
 
@@ -122,19 +123,20 @@ export default class Player
 
 				this.dispatchEvent({ type: PLAYER_EVENTS.PLAYER_COLLISION });
 			}
-		});
+		}
 	}
 
 	private checkPerkIntersection() {
 		let playerBox = new Box3().setFromObject(this);
-		this.perks.collection.forEach((perk) => {
+
+		for (const perk of this.perks) {
 			let perkBox = new Box3().setFromObject(perk);
 			const intersection = playerBox.intersectsBox(perkBox);
 			if (intersection) {
 				this.activePerksManager.add(perk.type);
 				this.perks.remove(perk);
 			}
-		});
+		}
 	}
 
 	checkBorders() {

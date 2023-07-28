@@ -18,6 +18,10 @@ export abstract class Pool<TElement extends GameElement> implements IUpdatable {
 		this.size = size;
 	}
 
+	[Symbol.iterator]() {
+		return this.collection[Symbol.iterator]();
+	}
+
 	private increaseSize(increaseValue: number): void {
 		this.size += increaseValue;
 	}
