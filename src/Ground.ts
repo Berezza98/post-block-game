@@ -57,12 +57,15 @@ export default class Ground implements GameElement {
 
 		leftBorder.rotateY(degToRad(90));
 		leftBorder.position.set(-this.width / 2, 0, this.segmentWidth / 2);
+		leftBorder.receiveShadow = true;
 
 		rightBorder.rotateY(degToRad(90));
 		rightBorder.position.set(this.width / 2, 0, this.segmentWidth / 2);
+		rightBorder.receiveShadow = true;
 
 		frontBorder.rotateX(degToRad(90));
 		frontBorder.position.set(0, this.height / 2, this.segmentWidth / 2);
+		frontBorder.receiveShadow = true;
 
 		this.object.add(leftBorder, rightBorder, frontBorder);
 	}
@@ -74,6 +77,7 @@ export default class Ground implements GameElement {
 				i % 2 === 0 ? this.materialBlack : this.materialWhite,
 			);
 			stripe.position.set(-this.width / 2 + i * this.segmentWidth + this.segmentWidth / 2, 0, 0);
+			stripe.receiveShadow = true;
 			this.object.add(stripe);
 		}
 	}
