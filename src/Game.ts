@@ -31,7 +31,7 @@ interface GameOptions {
 export default class Game {
 	scene = new Scene();
 
-	renderer = new WebGLRenderer({ alpha: true });
+	renderer: WebGLRenderer;
 
 	options: GameOptions;
 
@@ -62,6 +62,10 @@ export default class Game {
 	}
 
 	private setRenderer() {
+		this.renderer = new WebGLRenderer({
+			alpha: true,
+			antialias: true,
+		});
 		this.renderer.shadowMap.enabled = true;
 
 		this.renderer.setSize(window.innerWidth, window.innerHeight);
@@ -158,8 +162,6 @@ export default class Game {
 
 	private startAnimation() {
 		return new Promise((res) => {
-			this.init();
-
 			this.ground = new Ground(this.scene);
 			this.ground.render();
 
@@ -171,8 +173,20 @@ export default class Game {
 		});
 	}
 
+	private addResizeHandler() {
+		window.addEventListener('resize', () => {
+			this.camera.aspect = window.innerWidth / window.innerHeight;
+			this.camera.updateProjectionMatrix();
+			this.renderer.setSize(window.innerWidth, window.innerHeight);
+		});
+	}
+
 	start() {
+		this.addResizeHandler();
+
 		this.background.start();
+
+		this.init();
 		this.render();
 
 		this.startAnimation().then(() => {
