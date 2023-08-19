@@ -22,6 +22,7 @@ import { JumpButton } from './JumpButton';
 import { Score } from './Score';
 import Background from './Background';
 import { UpdateStructure } from './core/UpdateStructure';
+import { modelsLoader } from './core/ModelsLoader';
 
 interface GameOptions {
 	gui?: boolean;
@@ -181,7 +182,14 @@ export default class Game {
 		});
 	}
 
-	start() {
+	async start() {
+		await modelsLoader.loadAll([
+			{
+				name: 'player',
+				url: './models/sci-fi_cube/scene.gltf',
+			},
+		]);
+
 		this.addResizeHandler();
 
 		this.background.start();
